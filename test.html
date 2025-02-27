@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trainingsstatistiken</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .chart-container {
+        width: 80%;
+        margin: 20px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Trainingsdauer: Woche</h1>
+
+    <div class="chart-container">
+      <canvas id="runningChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="cyclingChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="swimmingChart"></canvas>
+    </div>
+
+    <script>
+      // Beispielwerte aus getStats (du kannst sie dynamisch ersetzen!)
+      const days = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+      const runningData = [30, 45, 50, 40, 60, 35, 50];
+      const cyclingData = [60, 90, 70, 50, 80, 100, 110];
+      const swimmingData = [20, 30, 25, 35, 40, 30, 50];
+
+      // Funktion zum Erstellen der Diagramme
+      function createChart(canvasId, label, data, color) {
+        const ctx = document.getElementById(canvasId).getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: days,
+            datasets: [
+              {
+                label: label,
+                data: data,
+                backgroundColor: color,
+                borderColor: color,
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: "Minuten",
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // Diagramme erzeugen
+      createChart(
+        "runningChart",
+        "Laufen (Minuten)",
+        runningData,
+        "rgba(255, 99, 132, 0.7)"
+      );
+      createChart(
+        "cyclingChart",
+        "Radfahren (Minuten)",
+        cyclingData,
+        "rgba(54, 162, 235, 0.7)"
+      );
+      createChart(
+        "swimmingChart",
+        "Schwimmen (Minuten)",
+        swimmingData,
+        "rgba(75, 192, 192, 0.7)"
+      );
+    </script>
+  </body>
+</html>

@@ -1,0 +1,229 @@
+body{
+    font-family: Arial, sans-serif;
+    
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+h1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.main {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+#calendar {
+    width: 350px;
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+}
+#calendar header {
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+#calendar header button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+#calendar header h1 {
+    margin: 0;
+    font-size: 18px;
+}
+#calendar table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+#calendar table th {
+    background: #f4f4f4;
+    padding: 10px;
+    color: #666;
+}
+#calendar table td {
+    padding: 15px;
+    cursor: pointer;
+    color: #333;
+}
+#calendar table td:hover {
+    background: #007bff;
+    color: white;
+}
+#calendar table td.empty {
+    background: #f9f9f9;
+    cursor: default;
+}
+#eventModal {
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Vertikale Zentrierung */
+    align-items: center; /* Horizontale Zentrierung */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    width: 300px; /* Optional, gibt eine feste Breite an */
+}
+#eventModal textarea {
+    width: 100%;
+    height: 100px;
+    margin-top: 10px;
+    padding: 10px; /* Hinzugefügtes Padding für besseres Aussehen */
+    border: 1px solid #ccc; /* Sanfter, grauer Rand */
+    border-radius: 8px; /* Abgerundete Ecken */
+    font-size: 14px; /* Angepasste Schriftgröße */
+    font-family: Arial, sans-serif; /* Einheitliche Schriftart */
+    resize: none; /* Verhindert, dass der Benutzer die Größe ändern kann */
+    box-sizing: border-box; /* Bezieht Padding und Border in die Gesamtgröße ein */
+}
+
+#eventModal textarea:focus {
+    border-color: #007bff; /* Blaue Randfarbe beim Fokussieren */
+    outline: none; /* Entfernt den Standard-Fokusrahmen */
+}
+#eventModal label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block; /* Label über dem Input anzeigen */
+}
+
+/* Inputs und Textareas */
+#eventModal input,
+#eventModal textarea,
+#eventModal select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box; /* Padding und Border einbeziehen */
+}
+
+/* Textarea: Verhindere Größenänderung */
+
+#eventModal {
+    margin-bottom: 15px; /* Abstand zwischen den Gruppen */
+}
+
+#eventModal label {
+    display: flex; /* Label über dem Input/Select anzeigen */
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px; /* Abstand zwischen Label und Input */
+    color: #555;
+}
+
+/*#eventModal input,
+#eventModal textarea,
+#eventModal select {
+    width: 100%; 
+    padding: 10px; 
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px; /* Abgerundete Kanten 
+    box-sizing: border-box; /* Padding wird in die Breite einbezogen 
+}*/
+
+#eventModal textarea {
+    resize: none; /* Deaktiviert Größenänderung */
+    height: 80px; /* Standardhöhe */
+}
+
+#eventModal select {
+    appearance: none; /* Standard-Browser-Stile entfernen */
+    background-color: white;
+    cursor: pointer;
+}
+
+
+#eventModal button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    margin-top: 10px;
+    width: 100px; /* Feste Breite für den Button */
+    border-radius: 5px
+}
+#eventModal button:hover {
+    background-color: #0056b3;
+}
+
+.block {
+    background-color: lightblue;
+    height: 100%;
+    text-align: center;
+    line-height: 50px; /* Anpassen an die Höhe des Containers */
+    cursor: pointer;
+    border: 1px solid #000;
+    box-sizing: border-box;
+    display: flex; /* Flexbox für besseren Text-Style */
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px; /* Abstand zwischen Blöcken */
+}
+#eventModal #BL {
+    display: flex;
+    gap: 5px; /* Abstand zwischen den Blöcken */
+    justify-content: flex-start; /* Blöcke von links nach rechts anordnen */
+    align-items: center;
+    width: 100%;
+    height: 50px; 
+    border: 1px solid #ccc;
+}
+.block-container {
+    display: flex;
+    flex-direction: row; /* Blöcke horizontal anordnen */
+    align-items: stretch; /* Blöcke gleich hoch machen */
+    gap: 5px; /* Abstände zwischen den Blöcken */
+    width: 100%;
+    height: 100px; /* oder wie hoch dein Blockbereich sein soll */
+    overflow: hidden; /* Verhindert, dass Blöcke umbrechen */
+}
+.block {
+    background-color: rgb(217, 181, 38);
+    height: 100%;
+    min-width: 50px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#BL {
+    display: flex;
+    align-items: center; /* Vertikal zentrieren */
+    gap: 2px; /* Abstand zwischen den Blöcken */
+    height: 100%;
+}
