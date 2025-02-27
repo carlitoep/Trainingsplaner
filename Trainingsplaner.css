@@ -227,3 +227,7 @@ h1{
     gap: 2px; /* Abstand zwischen den Blöcken */
     height: 100%;
 }
+.chart-container {
+    width: 80%;
+    margin: 20px auto;
+}

@@ -12,6 +12,7 @@ let currentDate = new Date();
 
 
 
+
 //let blocks = []; // Array, um die Trainingsblöcke zu speichern
 let draggingBlock = null; // Der aktuell gezogene Block
 let offsetX, offsetY;
@@ -113,6 +114,17 @@ function showPage(page) {
                  <input id="10km" placeholder="40:00">
                  <button onclick="recordsave()">Speichern</button>
                  </div>
+                 <h1>Trainingsdauer: Woche</h1>
+
+    <div class="chart-container">
+      <canvas id="runningChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="cyclingChart"></canvas>
+    </div>
+    <div class="chart-container">
+      <canvas id="swimmingChart"></canvas>
+    </div>
 
             `;
             if (localStorage.getItem("record10km") != null) {
@@ -387,6 +399,9 @@ function getStats() {
     let year = currentDate.getFullYear();
     let month = currentDate.getMonth(); // Monatsindex (0 = Januar, 1 = Februar, ...)
     let day = currentDate.getDate();
+    let lastTenWeeksS = []
+    let lastTenWeeksC = []
+    let lastTenWeeksR = []
 
     let durationR = 0;
     let durationC = 0;
@@ -403,6 +418,7 @@ function getStats() {
 
         let duration = parseFloat(localStorage.getItem(`DU${currentDay}.${currentMonth}.${currentYear}`)) || 0;
         let sportart = localStorage.getItem(`SP${currentDay}.${currentMonth}.${currentYear}`);
+
 
         // Trainingsdauer berechnen
         switch (sportart) {
@@ -432,10 +448,65 @@ function getStats() {
                 break;
         }
     }
+    weeks: for (let i = 0; i < 10; i++) {
+        let aktDate
+        if (i == 0) {
+            durationR = 0;
+            durationC = 0;
+            durationS = 0;
+        }
+        for (let j = 0; j < 7; j++) {
+            let date = new Date(year, month, day - (i * 7 + j)); // Korrekte Handhabung von Monatsgrenzen
+            let currentDay = date.getDate();
+            console.log(currentDay)
+            let currentMonth = monthNames[date.getMonth()];
+            let currentYear = date.getFullYear();
+
+            let duration = parseFloat(localStorage.getItem(`DU${currentDay}.${currentMonth}.${currentYear}`)) || 0;
+            let sportart = localStorage.getItem(`SP${currentDay}.${currentMonth}.${currentYear}`);
+
+
+            // Trainingsdauer berechnen
+            switch (sportart) {
+                case "running":
+                    durationR += duration;
+                    break;
+                case "cycling":
+                    console.log(durationC)
+                    durationC += duration;
+                    break;
+                case "swimming":
+                    durationS += duration;
+                    break;
+            }
+
+
+            if (date.getDay() == 1) {
+                console.log("Monday")
+                lastTenWeeksS.push(durationS)
+                lastTenWeeksC.push(durationC)
+                lastTenWeeksR.push(durationR)
+                durationR = 0;
+                durationC = 0;
+                durationS = 0;
+            } else {
+                console.log("not Monday")
+            }
+            aktDate = date
+        }
+        if (i == 9 && aktDate.getDay() != 1) {
+            lastTenWeeksS.push(durationS)
+            lastTenWeeksC.push(durationC)
+            lastTenWeeksR.push(durationR)
+            durationR = 0;
+            durationC = 0;
+            durationS = 0;
+        }
+    }
 
     // Ergebnisse anzeigen
     document.getElementById("stat").innerHTML = `
-        <h3>Wöchentliche Statistik:</h3>
+        <h3>Wöchentliche Statistik:</h3>
         <p><strong>Trainingsdauer:</strong></p>
         <ul>
             <li>Running: ${durationR} Minuten</li>
@@ -449,6 +520,26 @@ function getStats() {
             <li>Swimming: ${distanceS} km</li>
         </ul>
     `;
+    console.log(lastTenWeeksC)
+    createChart(
+        "runningChart",
+        "Laufen (Minuten)",
+        lastTenWeeksR,
+        "rgba(255, 99, 132, 0.7)"
+    );
+    createChart(
+        "cyclingChart",
+        "Radfahren (Minuten)",
+        lastTenWeeksC,
+        "rgba(54, 162, 235, 0.7)"
+    );
+    createChart(
+        "swimmingChart",
+        "Schwimmen (Minuten)",
+        lastTenWeeksS,
+        "rgba(75, 192, 192, 0.7)"
+    );
+
 }
 
 function isValidTime(time) {
@@ -464,4 +555,37 @@ function recordsave() {
     }
     console.log("dad")
     localStorage.setItem("record10km", document.getElementById("10km").value)
+}
+
+function createChart(canvasId, label, data, color) {
+    const ctx = document.getElementById(canvasId).getContext("2d");
+    const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: weeks,
+            datasets: [
+                {
+                    label: label,
+                    data: data,
+                    backgroundColor: color,
+                    borderColor: color,
+                    borderWidth: 1,
+                },
+            ],
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Minuten",
+                    },
+                },
+            },
+        },
+    });
 }
