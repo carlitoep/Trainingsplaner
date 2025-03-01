@@ -1,4 +1,14 @@
+let dayT = 5;  // Beispielwert
+let monthT = 3;  // Beispielwert
+let yearT = 2025;  // Beispielwert
 
+// Umwandeln in String und mit führender Null auffüllen, falls nötig
+dayT = String(dayT).padStart(2, '0');
+monthT = String(monthT).padStart(2, '0');
+
+// Jetzt kannst du das Datum erstellen
+const date = `${yearT}-${monthT}-${dayT}`;
+console.log(date);  // Ausgabe: "2025-03-05"
 
 const monthNames = [
     "Januar", "Februar", "März", "April", "Mai", "Juni",
@@ -151,14 +161,13 @@ function showPage(page) {
 
 function selectDay(day, month, year) {
     const content = document.getElementById('content')
-    console.log(day)
     content.innerHTML = `
         <h1>${day} ${month} ${year}</h1>
         <div class="main">
             <div id="eventModal">
                 <div id="input-group">
-                    <label for="SP${day}.${month}.${year}">Sportart:</label>
-                    <select id="SP${day}.${month}.${year}">
+                    <label for="activity_type">Sportart:</label>
+                    <select name="activity_type" id="activity_type">
                         <option value="running">Running</option>
                         <option value="cycling">Cycling</option>
                         <option value="swimming">Swimming</option>
@@ -169,9 +178,10 @@ function selectDay(day, month, year) {
                     <input type="number" id="DU${day}.${month}.${year}" placeholder="60">
                 </div>
                 <div id="input-group">
-                    <label for="DI${day}.${month}.${year}">Distanz (km):</label>
-                    <input type="number" id="DI${day}.${month}.${year}" placeholder="5">
+                    <label for="duration">Distanz (km):</label>
+                    <input type="number" id="duration" name="duration" required placeholder="5">
                 </div>
+                 
                 <div id="input-group">
                     <label for="TA${day}.${month}.${year}">Beschreibung:</label>
                     <textarea id="TA${day}.${month}.${year}" placeholder="Beschreibung eingeben"></textarea>
@@ -192,7 +202,7 @@ function selectDay(day, month, year) {
                 </div>
 
                 <button onclick="addBlock(${day}, '${month}', ${year})">Block hinzufügen</button>
-                <button onclick="save(${day}, '${month}', ${year})" id="BU${day}.${month}.${year}">Save</button>
+                <button type="submit" onclick="save(${day}, '${month}', ${year}, ${date})" id="BU${day}.${month}.${year}">Save</button>
             </div>
         </div>
     `;
@@ -200,15 +210,12 @@ function selectDay(day, month, year) {
     blockContainer.style.display = "flex";
     blockContainer.style.flexWrap = "nowrap"; // Verhindert Umbrüche
     blockContainer.style.overflow = "hidden"; // Verhindert Überlauf
-    loadBlocks(day, month, year)
+    // loadBlocks(day, month, year)
 
 
-    // Event-Listener fürs Modal
+    //loadTraining(date)
 
-
-    for (i = 0; i < events.length; i++) {
-        document.getElementById(`${events[i]}${day}.${month}.${year}`).value = localStorage.getItem(`${events[i]}${day}.${month}.${year}`)
-    }
+   
 
     document.getElementById(`BL${day}.${month}.${year}`).style.display = "none";
     //document.getElementById(`BL${day}.${month}.${year}`).style.width = 50 %
@@ -225,18 +232,20 @@ let blocks = [];
 let selectedBlockIndex = null;
 
 
-function save(day, month, year) {
+function save(day, month, year, date) {
+    console.log(document.getElementById("activity_type").value, document.getElementById(`DU${day}.${month}.${year}`).value, `${year}-${month}-${day}`)
+    addTraining(document.getElementById("activity_type").value, document.getElementById(`DU${day}.${month}.${year}`).value, `${year}-${month}-${day}`)
 
-
-    for (i = 0; i < events.length; i++) {
-        localStorage.setItem(`${events[i]}${day}.${month}.${year}`, document.getElementById(`${events[i]}${day}.${month}.${year}`).value)
-    }
-
-
+    /* for (i = 0; i < events.length; i++) {
+         localStorage.setItem(`${events[i]}${day}.${month}.${year}`, document.getElementById(`${events[i]}${day}.${month}.${year}`).value)
+     }
+ 
+ */
     // Schließe das Modal
     document.getElementById('eventModal').style.display = 'none';
     console.log(document.getElementById(`BL${day}.${month}.${year}`).value)
-    saveBlocksToLocalStorage(day, month, year);
+    //saveBlocksToLocalStorage(day, month, year);
+
     alert('Notiz gespeichert!');
     showPage("page2")
 
@@ -588,4 +597,34 @@ function createChart(canvasId, label, data, color) {
             },
         },
     });
+}
+function addTraining(activityType, duration, date) {
+    const formData = new FormData();
+    formData.append('user_id', 1);
+    formData.append('activity_type', activityType);
+    formData.append('duration_minutes', duration);
+    formData.append('date', date);
+
+
+    fetch('http://localhost/trainingsplaner/add_training.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+        })
+        .catch(error => console.error('Error:', error));
+}
+// Beispiel für das Laden von Trainings für ein bestimmtes Datum
+function loadTraining(date) {
+
+
+    fetch(`load_trainings.php?date=${date}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            // Hier könntest du die Daten anzeigen oder weiterverarbeiten
+        })
+        .catch(error => console.error('Error:', error));
 }
