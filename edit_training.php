@@ -29,7 +29,7 @@ if ($conn->connect_error) {
 }
 
 // Formulardaten empfangen
-$user_id = intval($_POST['user_id']); // Stelle sicher, dass es eine Zahl ist!
+$user_id = intval($_POST['user_id']);
 $activity_type = $conn->real_escape_string($_POST['activity_type']);
 $duration = intval($_POST['duration_minutes']);
 $date = $conn->real_escape_string($_POST['date']);
@@ -37,23 +37,27 @@ $distance = intval($_POST['distance']);
 $text = $conn->real_escape_string($_POST['text']);
 $training_id = $conn->real_escape_string($_POST['training_id']);
 
-// Check: Existiert der User?
-$user_check = $conn->query("SELECT id FROM users WHERE id = $user_id");
-if ($user_check->num_rows === 0) {
-    die('Fehler: Der angegebene Benutzer existiert nicht.');
+// Check, ob das Training existiert und dem User gehört
+$check_training = $conn->prepare("SELECT * FROM trainings WHERE training_id = ? AND user_id = ?");
+$check_training->bind_param("si", $training_id, $user_id);
+$check_training->execute();
+$result = $check_training->get_result();
+
+if ($result->num_rows === 0) {
+    die('Fehler: Training nicht gefunden oder du hast keine Berechtigung.');
 }
 
-// SQL vorbereiten
-$stmt = $conn->prepare("INSERT INTO trainings (user_id, activity_type, duration_minutes, date, distance, text, training_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("isisiss", $user_id, $activity_type, $duration, $date, $distance, $text, $training_id);
+// Update-Statement
+$stmt = $conn->prepare("UPDATE trainings SET activity_type = ?, duration_minutes = ?, date = ?, distance = ?, text = ? WHERE training_id = ?");
+$stmt->bind_param("sisiss", $activity_type, $duration, $date, $distance, $text, $training_id);
 
 if ($stmt->execute()) {
-    echo "Training erfolgreich gespeichert!";
+    echo "Training erfolgreich aktualisiert!";
 } else {
     echo "Fehler: " . $stmt->error;
 }
 
 $stmt->close();
 $conn->close();
-?>
 
+?>

@@ -17,7 +17,7 @@ if ($conn->connect_error) {
 $user_id = $_SESSION['user_id'];
 $date = $conn->real_escape_string($_GET['date']);
 
-$sql = "SELECT activity_type, duration_minutes FROM trainings 
+$sql = "SELECT activity_type, duration_minutes, distance, text, training_id FROM trainings 
         WHERE user_id = '$user_id' AND date = '$date'";
 
 $result = $conn->query($sql);

@@ -165,6 +165,12 @@ function selectDay(day, month, year) {
         <h1>${day} ${month} ${year}</h1>
         <div class="main">
             <div id="eventModal">
+            <label for="trainingsID">
+            <input id="trainingsID">
+            </label>
+                <header id="trainings">
+                        
+                </header>
                 <div id="input-group">
                     <label for="activity_type">Sportart:</label>
                     <select name="activity_type" id="activity_type">
@@ -174,17 +180,17 @@ function selectDay(day, month, year) {
                     </select>
                 </div>
                 <div id="input-group">
-                    <label for="DU${day}.${month}.${year}">Dauer (Min):</label>
-                    <input type="number" id="DU${day}.${month}.${year}" placeholder="60">
+                    <label for="duration">Dauer (Min):</label>
+                    <input type="number" id="duration" placeholder="60">
                 </div>
                 <div id="input-group">
-                    <label for="duration">Distanz (km):</label>
-                    <input type="number" id="duration" name="duration" required placeholder="5">
+                    <label for="distance">Distanz (km):</label>
+                    <input type="number" id="distance" name="duration" required placeholder="5">
                 </div>
                  
                 <div id="input-group">
-                    <label for="TA${day}.${month}.${year}">Beschreibung:</label>
-                    <textarea id="TA${day}.${month}.${year}" placeholder="Beschreibung eingeben"></textarea>
+                    <label for="text">Beschreibung:</label>
+                    <textarea id="text" placeholder="Beschreibung eingeben"></textarea>
                 </div>
 
                 <button id="startPlanning">Training planen</button>
@@ -202,7 +208,7 @@ function selectDay(day, month, year) {
                 </div>
 
                 <button onclick="addBlock(${day}, '${month}', ${year})">Block hinzufügen</button>
-                <button type="submit" onclick="save(${day}, '${month}', ${year}, ${date})" id="BU${day}.${month}.${year}">Save</button>
+                <button type="submit" onclick="save(${day}, '${month}', ${year})" id="BU${day}.${month}.${year}">Save</button>
             </div>
         </div>
     `;
@@ -213,9 +219,9 @@ function selectDay(day, month, year) {
     // loadBlocks(day, month, year)
 
 
-    //loadTraining(date)
+    loadTraining(day, month, year)
 
-   
+
 
     document.getElementById(`BL${day}.${month}.${year}`).style.display = "none";
     //document.getElementById(`BL${day}.${month}.${year}`).style.width = 50 %
@@ -230,11 +236,12 @@ function selectDay(day, month, year) {
 
 let blocks = [];
 let selectedBlockIndex = null;
+let trainingsIDElement = ""
 
 
-function save(day, month, year, date) {
-    console.log(document.getElementById("activity_type").value, document.getElementById(`DU${day}.${month}.${year}`).value, `${year}-${month}-${day}`)
-    addTraining(document.getElementById("activity_type").value, document.getElementById(`DU${day}.${month}.${year}`).value, `${year}-${month}-${day}`)
+function save(day, month, year) {
+    console.log(document.getElementById("activity_type").value, document.getElementById(`duration`).value, `${year}-${month}-${day}`, document.getElementById("text").value, document.getElementById("distance").value)
+    addTraining(day, month, year, document.getElementById("activity_type").value, document.getElementById(`duration`).value, `${year}-${month}-${day}`, document.getElementById("text").value, document.getElementById("distance").value)
 
     /* for (i = 0; i < events.length; i++) {
          localStorage.setItem(`${events[i]}${day}.${month}.${year}`, document.getElementById(`${events[i]}${day}.${month}.${year}`).value)
@@ -296,7 +303,7 @@ function addBlock(day, month, year) {
 
 // Block-Dauer setzen und Breite anpassen
 function setBlockDuration(day, month, year) {
-    const totalDuration = parseFloat(document.getElementById(`DU${day}.${month}.${year}`).value);
+    const totalDuration = parseFloat(document.getElementById(`duration`).value);
     const blockDuration = parseFloat(document.getElementById('blockDuration').value);
     const blockIntensity = document.getElementById('blockIntensity').value
     console.log(blockIntensity)
@@ -598,33 +605,131 @@ function createChart(canvasId, label, data, color) {
         },
     });
 }
-function addTraining(activityType, duration, date) {
-    const formData = new FormData();
-    formData.append('user_id', 1);
-    formData.append('activity_type', activityType);
-    formData.append('duration_minutes', duration);
-    formData.append('date', date);
+function addTraining(day, month, year, activityType, duration, date, text, distance) {
+    const formData1 = new FormData();
+    formData1.append('date', date);
 
-
-    fetch('http://localhost/trainingsplaner/add_training.php', {
+    fetch('count_entries.php', {
         method: 'POST',
-        body: formData
+        body: formData1
     })
-        .then(response => response.text())
-        .then(data => {
-            console.log(data);
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Fehler beim Abrufen der Einträge');
+            }
+            return response.json();
         })
-        .catch(error => console.error('Error:', error));
+        .then(data => {
+            console.log(`Anzahl der Einträge am ${date}:`, data.count);
+
+            let training_id;
+            console.log(trainingsIDElement)
+
+            if (trainingsIDElement == "") {
+                // Neues Training erstellen
+                training_id = `${date}${data.count + 1}`;
+
+                const formData = new FormData();
+                formData.append('user_id', 1); // Achtung: besser dynamisch machen!
+                formData.append('activity_type', activityType);
+                formData.append('duration_minutes', duration);
+                formData.append('distance', distance);
+                formData.append('text', text);
+                formData.append('date', date);
+                formData.append('training_id', training_id);
+
+                fetch('http://localhost/trainingsplaner/add_training.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Fehler beim Speichern des Trainings');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log('Training hinzugefügt:', data);
+                    })
+                    .catch(error => console.error('Fehler:', error));
+
+            } else {
+                // Bestehendes Training aktualisieren
+                training_id = parseFloat(trainingsIDElement.slice(-1)); // Letztes Zeichen (ID) extrahieren
+                console.log('Training aktualisieren mit ID:', training_id);
+
+                const formData = new FormData();
+                formData.append('user_id', 1); // Achtung: besser dynamisch machen!
+                formData.append('training_id', `${date}${training_id}`);
+                formData.append('activity_type', activityType);
+                formData.append('duration_minutes', duration);
+                formData.append('date', date);
+                formData.append('distance', distance);
+                formData.append('text', text);
+
+                fetch('edit_training.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Fehler beim Aktualisieren des Trainings');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        console.log('Antwort:', data);
+                        trainingsIDElement = ""
+                    })
+                    .catch(error => console.error('Fehler:', error));
+            }
+        })
+        .catch(error => console.error('Fehler:', error));
 }
 // Beispiel für das Laden von Trainings für ein bestimmtes Datum
-function loadTraining(date) {
-
+function loadTraining(day, month, year) {
+    let date = `${year}-${month}-${day}`
 
     fetch(`load_trainings.php?date=${date}`)
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            // Hier könntest du die Daten anzeigen oder weiterverarbeiten
+            console.log(data[0].duration_minutes)
+            console.log(document.getElementById("duration").value)
+            document.getElementById("activity_type").value = data[0].activity_type
+            document.getElementById("duration").value = parseFloat(data[0].duration_minutes)
+            document.getElementById("text").value = data[0].text
+            document.getElementById("distance").value = parseFloat(data[0].distance)
+            document.getElementById("trainingsID").value = data[0].training_id
+            trainingsIDElement = data[0].training_id
+            for (let i = 0; i < data.length + 1; i++) {
+                console.log(i)
+                if (i == data.length && i > 0) {
+                    let button = document.createElement("button")
+                    button.textContent = "+"
+                    document.getElementById("trainings").appendChild(button)
+                    button.addEventListener("click", function () {
+                        document.getElementById("activity_type").value = "running"
+                        document.getElementById("duration").value = null
+                        document.getElementById("text").value = ""
+                        document.getElementById("distance").value = null
+                        document.getElementById("trainingsID").value = ""
+                        trainingsIDElement = ""
+                    })
+                    break
+                }
+                let button = document.createElement("button")
+                button.textContent = data[i].activity_type
+                document.getElementById("trainings").appendChild(button)
+                button.addEventListener("click", function () {
+                    document.getElementById("activity_type").value = data[i].activity_type
+                    document.getElementById("duration").value = parseFloat(data[i].duration_minutes)
+                    document.getElementById("text").value = data[i].text
+                    document.getElementById("distance").value = parseFloat(data[i].distance)
+                    document.getElementById("trainingsID").value = data[i].training_id
+                    trainingsIDElement = data[i].training_id
+                })
+            }
         })
         .catch(error => console.error('Error:', error));
 }
