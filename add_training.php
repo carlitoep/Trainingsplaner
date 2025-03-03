@@ -32,10 +32,17 @@ if ($conn->connect_error) {
 $user_id = intval($_POST['user_id']); // Stelle sicher, dass es eine Zahl ist!
 $activity_type = $conn->real_escape_string($_POST['activity_type']);
 $duration = intval($_POST['duration_minutes']);
-$date = $conn->real_escape_string($_POST['date']);
+$date = $_POST['date'] ?? null;
+
+if ($date && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+    // Gültiges Format
+} else {
+    die('Ungültiges Datum.');
+}
 $distance = intval($_POST['distance']);
 $text = $conn->real_escape_string($_POST['text']);
 $training_id = $conn->real_escape_string($_POST['training_id']);
+$blocks = $conn->real_escape_string($_POST['blocks']);
 
 // Check: Existiert der User?
 $user_check = $conn->query("SELECT id FROM users WHERE id = $user_id");
@@ -43,9 +50,10 @@ if ($user_check->num_rows === 0) {
     die('Fehler: Der angegebene Benutzer existiert nicht.');
 }
 
-// SQL vorbereiten
-$stmt = $conn->prepare("INSERT INTO trainings (user_id, activity_type, duration_minutes, date, distance, text, training_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("isisiss", $user_id, $activity_type, $duration, $date, $distance, $text, $training_id);
+// SQL vorbereiten INSERT INTO trainings (user_id, activity_type, duration_minutes, date, distance, text, training_id) VALUES (?, ?, ?, ?, ?, ?, ?)$user_id, $activity_type, $duration, $date, $distance, $text, $training_id
+
+$stmt = $conn->prepare("INSERT INTO trainings (user_id, activity_type, duration_minutes, date, distance, text, training_id, blocks) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->bind_param("isisisss",$user_id, $activity_type, $duration, $date, $distance, $text, $training_id, $blocks);
 
 if ($stmt->execute()) {
     echo "Training erfolgreich gespeichert!";

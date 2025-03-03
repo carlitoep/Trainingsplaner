@@ -32,10 +32,11 @@ if ($conn->connect_error) {
 $user_id = intval($_POST['user_id']);
 $activity_type = $conn->real_escape_string($_POST['activity_type']);
 $duration = intval($_POST['duration_minutes']);
-$date = $conn->real_escape_string($_POST['date']);
+$date = date('Y-m-d', strtotime($_POST['date'])); // Entfernen oder absichern!
 $distance = intval($_POST['distance']);
 $text = $conn->real_escape_string($_POST['text']);
 $training_id = $conn->real_escape_string($_POST['training_id']);
+$blocks = $conn->real_escape_string($_POST['blocks']);
 
 // Check, ob das Training existiert und dem User gehört
 $check_training = $conn->prepare("SELECT * FROM trainings WHERE training_id = ? AND user_id = ?");
@@ -48,11 +49,11 @@ if ($result->num_rows === 0) {
 }
 
 // Update-Statement
-$stmt = $conn->prepare("UPDATE trainings SET activity_type = ?, duration_minutes = ?, date = ?, distance = ?, text = ? WHERE training_id = ?");
-$stmt->bind_param("sisiss", $activity_type, $duration, $date, $distance, $text, $training_id);
+$stmt = $conn->prepare("UPDATE trainings SET activity_type = ?, duration_minutes = ?, date = ?, distance = ?,blocks = ?, text = ?  WHERE training_id = ?");
+$stmt->bind_param("sisisss", $activity_type, $duration, $date, $distance, $blocks, $text, $training_id);
 
 if ($stmt->execute()) {
-    echo "Training erfolgreich aktualisiert!";
+    echo $blocks;
 } else {
     echo "Fehler: " . $stmt->error;
 }

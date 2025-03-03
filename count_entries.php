@@ -2,7 +2,7 @@
 include 'config.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $date = $conn->real_escape_string($_POST['date']);
+    $date = date('Y-m-d', strtotime($_POST['date'])); // Entfernen oder absichern!
     $sql = "SELECT COUNT(*) AS count FROM trainings WHERE date = ?";
     
     $stmt = $conn->prepare($sql);
