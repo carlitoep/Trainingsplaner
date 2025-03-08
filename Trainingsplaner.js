@@ -169,60 +169,81 @@ function showPage(page, button) {
             break;
         case 'page2':
             content.innerHTML = `
-                <h1>Calender</h1>
-                <div class="main">
-                <div id="calendar">
-        <header>
-            <button id="prev" onclick="changeMonth(-1)">❮</button>
-            <h1 id="monthYear"></h1>
-            <button id="next" onclick="changeMonth(1)">❯</button>
-        </header>
-        <table>
-            <thead>
-                <tr>
-                    <th>Mo</th>
-                    <th>Di</th>
-                    <th>Mi</th>
-                    <th>Do</th>
-                    <th>Fr</th>
-                    <th>Sa</th>
-                    <th>So</th>
-                </tr>
-            </thead>
-            <tbody id="days"></tbody>
-        </table>
-    </div>
-    </div>
+                <!-- Kalender-Seite -->
+<div id="page2" class="page-content">
+    <header class="header">
+        <h1>Kalender 📅</h1>
+    </header>
+    <main class="calendar-container">
+        <div id="calendar">
+            <header>
+                <button id="prev" onclick="changeMonth(-1)">❮</button>
+                <h1 id="monthYear"></h1>
+                <button id="next" onclick="changeMonth(1)">❯</button>
+            </header>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mo</th>
+                        <th>Di</th>
+                        <th>Mi</th>
+                        <th>Do</th>
+                        <th>Fr</th>
+                        <th>Sa</th>
+                        <th>So</th>
+                    </tr>
+                </thead>
+                <tbody id="days"></tbody>
+            </table>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 Trainingsplaner. Dein Kalender für sportliche Erfolge! 💪</p>
+    </footer>
+</div>
+
             `;
             renderCalendar();
             break;
         case 'page3':
             content.innerHTML = `
-                <h1>Statistiken</h1>
-                <label for="timeRange">Zeitraum auswählen:</label>
-                <select id="timeRange" onchange="getStats()">
+               <!-- Statistik-Seite -->
+<div id="page3" class="page-content">
+    <header class="header">
+        <h1>Statistiken 📊</h1>
+    </header>
+    <main class="stats-container">
+        <section class="card">
+            <label for="timeRange">Zeitraum auswählen:</label>
+            <select id="timeRange" onchange="getStats()">
                 <option value="7">Woche</option>
                 <option value="30">Monat</option>
                 <option value="365">Jahr</option>
-                </select>
-              
-                 <h1>Trainingsdauer: Woche</h1>
+            </select>
+        </section>
 
-    <div class="chart-container">
-      <canvas id="runningChart"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="cyclingChart"></canvas>
-    </div>
-    <div class="chart-container">
-      <canvas id="swimmingChart"></canvas>
-    </div>
+        <section class="card">
+            <h2>Trainingsdauer: <span id="selected-range">Woche</span></h2>
+            <div class="chart-container">
+                <canvas id="runningChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="cyclingChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="swimmingChart"></canvas>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Trainingsplaner. Deine Fortschritte im Blick! 💪</p>
+    </footer>
+</div>
+
 
             `
             getStats();
-            if (localStorage.getItem("record10km") != null) {
-                document.getElementById("10km").value = localStorage.getItem("record10km")
-            }
+
             break;
         case 'page4':
             content.innerHTML = `
