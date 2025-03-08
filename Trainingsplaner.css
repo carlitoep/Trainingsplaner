@@ -231,3 +231,163 @@ h1{
     width: 80%;
     margin: 20px auto;
 }
+/* Allgemeine Stile */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: #f4f4f4;
+    color: #333;
+    padding: 2rem;
+    line-height: 1.6;
+}
+
+h1, h2 {
+    margin-bottom: 1rem;
+}
+
+ul {
+    list-style: none;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    background: #4caf50;
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+}
+
+.header p {
+    font-size: 1.2rem;
+}
+
+/* Dashboard */
+.dashboard {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* Karten (Sections) */
+.card {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+    font-size: 1.5rem;
+    color: #4caf50;
+    border-bottom: 2px solid #4caf50;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Fortschrittsbalken */
+.progress-bar {
+    background: #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    height: 20px;
+    margin-bottom: 1rem;
+}
+
+.progress {
+    height: 100%;
+    background: #4caf50;
+    width: 0;
+    transition: width 0.4s ease;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: #4caf50;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.btn:hover {
+    background: #45a049;
+}
+
+/* Quick Links */
+.quick-links {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+/* Header Navigation */
+.navbar {
+    display: flex;
+    justify-content: space-around;
+    background: #4caf50;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.nav-btn {
+    background: white;
+    border: none;
+    color: #4caf50;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.nav-btn:hover {
+    background: #388e3c;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.active {
+    background: #388e3c;
+    color: white;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Mobile Anpassung */
+@media (max-width: 768px) {
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .nav-btn {
+        width: 80%;
+    }
+}

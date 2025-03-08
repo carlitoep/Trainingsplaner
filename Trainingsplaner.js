@@ -1,3 +1,8 @@
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('Die Seite ist bereit!');
+    showPage("page1", true)
+});
+
 let dayT = 5;  // Beispielwert
 let monthT = 3;  // Beispielwert
 let yearT = 2025;  // Beispielwert
@@ -68,17 +73,99 @@ function changeMonth(direction) {
 
 
 
-// Render the initial calendar
 
-
-function showPage(page) {
+function showPage(page, button) {
     const content = document.getElementById('content');
+    console.log(button)
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (button != true) {
+
+        button.classList.add('active');
+
+    } else {
+    }
+    console.log('Seite wechseln zu:', page);
+    let btn1 = document.getElementById("btn-1")
+    let btn2 = document.getElementById("btn-2")
+    let btn3 = document.getElementById("btn-3")
+    let btn4 = document.getElementById("btn-4")
+    console.log(btn2)
+
+
     switch (page) {
         case 'page1':
             content.innerHTML = `
-                <h1>Seite 1</h1>
-                <p>Das ist der Inhalt der ersten Seite.</p>
+                <header class="header">
+        <h1>Willkommen zurück, [Benutzername]! 🏃‍♀️</h1>
+        <p>Dein Weg zu neuen Bestzeiten beginnt hier.</p>
+    </header>
+
+    <main class="dashboard">
+        <!-- Ziele und Fortschritt -->
+        <section class="card goals">
+            <h2>Deine Wochenziele 📈</h2>
+            <p><strong>Trainingsziel:</strong> 3 Workouts</p>
+            <p><strong>Distanzziel:</strong> 20 km</p>
+            <div class="progress-bar">
+                <div class="progress" style="width: 50%;"></div>
+            </div>
+            <p>Du hast 10 km geschafft — weiter so! 🚀</p>
+        </section>
+
+        <!-- Letzte Aktivitäten -->
+        <section class="card recent-activities">
+            <h2>Deine letzten Trainings 🏅</h2>
+            <ul>
+                <li><strong>Gestern:</strong> 5 km Laufen | 30 Min. | Tempo: 5:30 min/km</li>
+                <li><strong>Vorgestern:</strong> 40 Min. Radfahren | 15 km</li>
+                <li><strong>Sonntag:</strong> 1 km Schwimmen | 25 Min.</li>
+            </ul>
+        </section>
+
+        <!-- Nächste geplante Trainings -->
+        <section class="card upcoming-trainings">
+            <h2>Nächste geplante Trainings 📅</h2>
+            <ul>
+                <li>🏃‍♂️ Lauftraining — 10 km am Mittwoch, 6. März, 17:00 Uhr</li>
+                <li>🚴‍♀️ Radtraining — 20 km am Samstag, 9. März, 10:00 Uhr</li>
+            </ul>
+            <a id="kalenderbtn" class="btn">Zum Kalender →</a>
+        </section>
+
+        <!-- Bestzeiten -->
+        <section class="card best-times">
+            <h2>Deine Bestzeiten 🏆</h2>
+            <ul>
+                <li><strong>5 km Lauf:</strong> 23:45 Min.</li>
+                <li><strong>10 km Lauf:</strong> 50:10 Min.</li>
+                <li><strong>Halbmarathon:</strong> 1:45:00 Std.</li>
+            </ul>
+        </section>
+
+        <!-- Schnelle Links -->
+        <section class="quick-links">
+            <a id="TrainingHinzufügen" class="btn">Neues Training hinzufügen</a>
+            <a id="StatsAnzeigen" class="btn">Statistiken ansehen</a>
+            <a  id="Bestzeiten" class="btn">Bestzeiten und Vorhersagen</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Trainingsplaner. Bleib stark und bleib dran! 💪</p>
+    </footer>
             `;
+            document.getElementById('kalenderbtn').addEventListener('click', function () {
+                showPage('page2', btn2);
+            });
+            document.getElementById('TrainingHinzufügen').addEventListener('click', function () {
+                showPage('page2', btn2);
+            });
+            document.getElementById('StatsAnzeigen').addEventListener('click', function () {
+                showPage('page3', btn3);
+            });
+            document.getElementById('Bestzeiten').addEventListener('click', function () {
+                showPage('page4', btn4);
+            });
             break;
         case 'page2':
             content.innerHTML = `
@@ -107,6 +194,7 @@ function showPage(page) {
     </div>
     </div>
             `;
+            renderCalendar();
             break;
         case 'page3':
             content.innerHTML = `
@@ -117,13 +205,7 @@ function showPage(page) {
                 <option value="30">Monat</option>
                 <option value="365">Jahr</option>
                 </select>
-                <button onclick="getStats()">Statistiken anzeigen</button>
-                <div id="stat"></div>
-                 <div id="records">
-                 <label for="10km">10km Rekord</label>
-                 <input id="10km" placeholder="40:00">
-                 <button onclick="recordsave()">Speichern</button>
-                 </div>
+              
                  <h1>Trainingsdauer: Woche</h1>
 
     <div class="chart-container">
@@ -136,16 +218,49 @@ function showPage(page) {
       <canvas id="swimmingChart"></canvas>
     </div>
 
-            `;
+            `
+            getStats();
             if (localStorage.getItem("record10km") != null) {
                 document.getElementById("10km").value = localStorage.getItem("record10km")
             }
             break;
         case 'page4':
             content.innerHTML = `
-                <h1>Seite 4</h1>
-                <p>Das ist der Inhalt der vierten Seite.</p>
-            `;
+                <!-- Seite für Bestzeiten -->
+<div id="page-best-times" class="page-content">
+    <header class="header">
+        <h1>Gib deine Bestzeiten ein 🏆</h1>
+        <p>Trage deine Bestzeiten für verschiedene Distanzen ein und speichere sie!</p>
+    </header>
+
+    <main class="best-times-form">
+        <section class="card">
+            <h2>Bestzeiten hinzufügen</h2>
+            <form id="best-times-form">
+                <label for="best-time-5k">5 km Lauf:</label>
+                <input type="text" id="best-time-5k" placeholder="z.B. 00:23:45" required>
+
+                <label for="best-time-10k">10 km Lauf:</label>
+                <input type="text" id="best-time-10k" placeholder="z.B. 00:50:10" required>
+
+                <label for="best-time-half-marathon">Halbmarathon:</label>
+                <input type="text" id="best-time-half-marathon" placeholder="z.B. 01:45:00" required>
+
+                <button type="submit" class="btn">Bestzeiten speichern</button>
+            </form>
+        </section>
+
+        <section class="card">
+            <h2>Deine gespeicherten Bestzeiten 🏅</h2>
+            <ul id="saved-best-times">
+                <!-- Hier werden die gespeicherten Bestzeiten angezeigt -->
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Trainingsplaner. Bleib stark und bleib dran! 💪</p>
+    </footer>`
             break;
         default:
             content.innerHTML = `
@@ -153,8 +268,9 @@ function showPage(page) {
                 <p>Klicken Sie auf die Buttons, um verschiedene Seiteninhalte anzuzeigen.</p>
             `;
     }
+
+
     //Calender()
-    renderCalendar();
 
 
 }
