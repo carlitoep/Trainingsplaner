@@ -116,9 +116,9 @@ function showPage(page, button) {
         <section class="card recent-activities">
             <h2>Deine letzten Trainings 🏅</h2>
             <ul>
-                <li><strong>Gestern:</strong> 5 km Laufen | 30 Min. | Tempo: 5:30 min/km</li>
-                <li><strong>Vorgestern:</strong> 40 Min. Radfahren | 15 km</li>
-                <li><strong>Sonntag:</strong> 1 km Schwimmen | 25 Min.</li>
+                <li id ="vergangen1"></li>
+                <li id ="vergangen2"></li>
+                <li id ="vergangen3"></li>
             </ul>
         </section>
 
@@ -166,6 +166,7 @@ function showPage(page, button) {
             document.getElementById('Bestzeiten').addEventListener('click', function () {
                 showPage('page4', btn4);
             });
+            startseite()
             break;
         case 'page2':
             content.innerHTML = `
@@ -792,6 +793,28 @@ function loadTraining(day, month, year) {
                     loadBlocks(data[i].date, data[i].blocks)
                 })
             }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function startseite() {
+    let now = new Date()
+    const formData = new FormData();
+    formData.append("user_id", 1);
+
+    fetch('startseite.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Vergangene Trainings:', data.past);
+            console.log('Zukünftige Trainings:', data.future);
+
+            for (let i = 0; i < data.past.length; i++) {
+                document.getElementById(`vergangen${i + 1}`).textContent = data.past[i].activity_type + " | " + data.past[i].duration_minutes
+            }
+
         })
         .catch(error => console.error('Error:', error));
 }
