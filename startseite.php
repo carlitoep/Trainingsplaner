@@ -28,6 +28,17 @@ $sql_past = "
     LIMIT 3
 ";
 
+
+function tageSeitDatum($datum) {
+    $gegebenesDatum = new DateTime($datum);
+    $heute = new DateTime();
+    
+    // Differenz berechnen
+    $differenz = $heute->diff($gegebenesDatum);
+    
+    return $differenz->days;
+}
+
 $stmt_past = $conn->prepare($sql_past);
 $stmt_past->bind_param("si", $now, $user_id);
 $stmt_past->execute();
@@ -35,6 +46,7 @@ $result_past = $stmt_past->get_result();
 
 $past_trainings = [];
 while ($row = $result_past->fetch_assoc()) {
+    $row['tage_seit'] = tageSeitDatum($row['date']); // Anzahl der Tage seit dem Training hinzufügen
     $past_trainings[] = $row;
 }
 $stmt_past->close();
@@ -54,6 +66,7 @@ $result_future = $stmt_future->get_result();
 
 $future_trainings = [];
 while ($row = $result_future->fetch_assoc()) {
+    $row['tage_seit'] = tageSeitDatum($row['date']); // Anzahl der Tage seit dem Training hinzufügen
     $future_trainings[] = $row;
 }
 $stmt_future->close();

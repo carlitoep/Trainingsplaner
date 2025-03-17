@@ -126,8 +126,8 @@ function showPage(page, button) {
         <section class="card upcoming-trainings">
             <h2>Nächste geplante Trainings 📅</h2>
             <ul>
-                <li>🏃‍♂️ Lauftraining — 10 km am Mittwoch, 6. März, 17:00 Uhr</li>
-                <li>🚴‍♀️ Radtraining — 20 km am Samstag, 9. März, 10:00 Uhr</li>
+                <li id ="zukunft1"></li>
+                <li id ="zukunft2"></li>
             </ul>
             <a id="kalenderbtn" class="btn">Zum Kalender →</a>
         </section>
@@ -309,9 +309,9 @@ function selectDay(day, month, year) {
                 <div id="input-group">
                     <label for="activity_type">Sportart:</label>
                     <select name="activity_type" id="activity_type">
-                        <option value="running">Running</option>
-                        <option value="cycling">Cycling</option>
-                        <option value="swimming">Swimming</option>
+                        <option value="Laufen">Laufen</option>
+                        <option value="Radfahren">Radfahren</option>
+                        <option value="Schwimmen">Schwimmen</option>
                     </select>
                 </div>
                 <div id="input-group">
@@ -396,7 +396,7 @@ function save(day, month, year) {
     //saveBlocksToLocalStorage(day, month, year);
 
     alert('Notiz gespeichert!');
-    showPage("page2")
+    showPage('page2', true)
 
 }
 
@@ -522,11 +522,11 @@ function openModal(block, blocks) {
     let label = document.getElementById("blockIntensityLabel")
     let input = document.getElementById("blockIntensity")
     switch (sport) {
-        case "swimming": label.textContent = "Geschwindigkeit(min/100m)"
+        case "Schwimmen": label.textContent = "Geschwindigkeit(min/100m)"
             input.placeholder = "1:30"
-        case "cycling": label.textContent = "Geschwindigkeit(km/h)"
+        case "Radfahren": label.textContent = "Geschwindigkeit(km/h)"
             input.placeholder = "30"
-        case "running": label.textContent = "Geschwindigkeit(min/km)"
+        case "Laufen": label.textContent = "Geschwindigkeit(min/km)"
             input.placeholder = "4:30"
     }
 }
@@ -773,7 +773,7 @@ function loadTraining(day, month, year) {
                     button.textContent = "+"
                     document.getElementById("trainings").appendChild(button)
                     button.addEventListener("click", function () {
-                        document.getElementById("activity_type").value = "running"
+                        document.getElementById("activity_type").value = "Laufen"
                         document.getElementById("duration").value = null
                         document.getElementById("text").value = ""
                         document.getElementById("distance").value = null
@@ -798,7 +798,6 @@ function loadTraining(day, month, year) {
 }
 
 function startseite() {
-    let now = new Date()
     const formData = new FormData();
     formData.append("user_id", 1);
 
@@ -812,9 +811,28 @@ function startseite() {
             console.log('Zukünftige Trainings:', data.future);
 
             for (let i = 0; i < data.past.length; i++) {
-                document.getElementById(`vergangen${i + 1}`).textContent = data.past[i].activity_type + " | " + data.past[i].duration_minutes
+                if (data.past[i].tage_seit == 0) {
+                    document.getElementById(`vergangen${i + 1}`).textContent = "Heute: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                }
+                else if (data.past[i].tage_seit == 1) {
+                    document.getElementById(`vergangen${i + 1}`).textContent = "Gestern: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                } else if (data.past[i].tage_seit == 2) {
+                    document.getElementById(`vergangen${i + 1}`).textContent = "Vorgestern: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                } else {
+                    document.getElementById(`vergangen${i + 1}`).textContent = "Vor " + data.past[i].tage_seit + " Tagen: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                }
             }
-
+            for (let i = 0; i < data.future.length; i++) {
+                if (data.future[i].tage_seit == 0) {
+                    document.getElementById(`zukunft${i + 1}`).textContent = "Morgen: " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                }
+                else if (data.future[i].tage_seit == 1) {
+                    document.getElementById(`zukunft${i + 1}`).textContent = "Übermorgen: " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                }
+                else {
+                    document.getElementById(`zukunft${i + 1}`).textContent = "In " + (data.future[i].tage_seit - 1) + " Tagen: " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                }
+            }
         })
         .catch(error => console.error('Error:', error));
 }
