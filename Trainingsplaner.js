@@ -96,7 +96,7 @@ function showPage(page, button) {
         case 'page1':
             content.innerHTML = `
                 <header class="header">
-        <h1>Willkommen zurück, [Benutzername]! 🏃‍♀️</h1>
+        <h1 id="user">Willkommen zurück, </h1>
         <p>Dein Weg zu neuen Bestzeiten beginnt hier.</p>
     </header>
 
@@ -260,15 +260,15 @@ function showPage(page, button) {
             <h2>Bestzeiten hinzufügen</h2>
             <form id="best-times-form">
                 <label for="best-time-5k">5 km Lauf:</label>
-                <input type="text" id="best-time-5k" placeholder="z.B. 00:23:45" required>
+                <input type="text" id="best-time-5k" placeholder="z.B. 00:23:45" >
 
                 <label for="best-time-10k">10 km Lauf:</label>
-                <input type="text" id="best-time-10k" placeholder="z.B. 00:50:10" required>
+                <input type="text" id="best-time-10k" placeholder="z.B. 00:50:10" >
 
                 <label for="best-time-half-marathon">Halbmarathon:</label>
-                <input type="text" id="best-time-half-marathon" placeholder="z.B. 01:45:00" required>
+                <input type="text" id="best-time-half-marathon" placeholder="z.B. 01:45:00" >
 
-                <button type="submit" class="btn">Bestzeiten speichern</button>
+                <button type="button" onclick="bestzeiten()" class="btn">Bestzeiten speichern</button>
             </form>
         </section>
 
@@ -799,7 +799,6 @@ function loadTraining(day, month, year) {
 
 function startseite() {
     const formData = new FormData();
-    formData.append("user_id", 1);
 
     fetch('startseite.php', {
         method: 'POST',
@@ -835,4 +834,83 @@ function startseite() {
             }
         })
         .catch(error => console.error('Error:', error));
+
+    fetch('user.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.text()) // Erst als Text ausgeben!
+        .then(text => {
+            console.log("Server-Antwort (Text):", text); // Sehen, was der Server sendet
+            return JSON.parse(text); // Dann zu JSON umwandeln
+        })
+        .then(data => {
+            console.log("Server-Antwort (JSON):", data);
+
+            if (data.error) {
+                console.error("Fehler:", data.error);
+                document.getElementById("user").textContent = "Fehler: " + data.error;
+            } else {
+                document.getElementById("user").textContent += data.username + "! 🏃‍♀️";
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    getRecords()
+}
+
+async function getRecords() {
+    let records = [5, 10, 21];
+
+    for (let distance of records) {
+        const formData = new FormData();
+        formData.append('distance', distance);
+
+        try {
+            const response = await fetch('getRecord.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            // Antwort als Text holen
+            const responseText = await response.text();
+
+            // Prüfen, ob die Antwort mit "<" beginnt (HTML-Fehlermeldung)
+            if (responseText.trim().startsWith("<")) {
+                console.error("Server-Fehler:", responseText);
+                continue; // Gehe zur nächsten Distanz
+            }
+
+            // Als JSON parsen
+            const data = JSON.parse(responseText);
+
+            console.log(`Rekord für ${distance} km:`, data);
+        } catch (error) {
+            console.error('Fehler:', error);
+        }
+    }
+}
+
+
+async function bestzeiten() {
+    console.log("ddd")
+    let records = [[5, 10, 21], [document.getElementById("best-time-5k").value, document.getElementById("best-time-10k").value, document.getElementById("best-time-half-marathon").value]]
+    for (let i = 0; i < records[0].length; i++) {
+        const formData = new FormData();
+        formData.append('time', records[1][i]);
+        formData.append('distance', records[0][i]);
+
+        try {
+            const response = await fetch('records.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Server error: ' + response.status);
+            }
+
+        } catch (error) {
+            console.error('Fehler:', error);
+        }
+    }
 }
