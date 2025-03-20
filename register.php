@@ -32,14 +32,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("sss", $username, $hashed_password, $email);
 
             if ($stmt->execute()) {
+                // **Hier wird die User-ID nach erfolgreicher Registrierung geholt**
+                $user_id = $conn->insert_id;
+
+                // Standard-Bestzeiten hinzufügen
+                $zeiten = [5, 10, 21];
+                $time = null;
+
+                // **Statement für records nur einmal vorbereiten**
+                $stmt_record = $conn->prepare("INSERT INTO records (user_id, distance, time) VALUES (?, ?, ?)");
+
+                foreach ($zeiten as $distance) {
+                    $stmt_record->bind_param("iis", $user_id, $distance, $time);
+                    $stmt_record->execute();
+                }
+
+                $stmt_record->close();
+
                 echo "Registrierung erfolgreich!";
                 header("Location: login.php");
                 exit();
             } else {
                 $errors[] = "Fehler bei der Registrierung: " . $conn->error;
             }
+            $stmt->close();
         }
-        $stmt->close();
     }
 }
 ?>

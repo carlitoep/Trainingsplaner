@@ -27,7 +27,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $errors[] = "Falscher Benutzername oder Passwort.";
         }
+        
         $stmt->close();
+    
     }
 }
 ?>

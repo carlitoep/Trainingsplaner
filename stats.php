@@ -30,7 +30,7 @@ if ($conn->connect_error) {
 if (!isset($_POST['user_id']) || !isset($_POST['activity_type'])) {
     die('Fehlende POST-Daten');
 }
-$user_id = intval($_POST['user_id'] ?? 0);
+$user_id = intval($_SESSION['user_id']);
 $activity_type = $conn->real_escape_string($_POST['activity_type']);
 
 

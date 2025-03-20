@@ -104,10 +104,18 @@ function showPage(page, button) {
         <!-- Ziele und Fortschritt -->
         <section class="card goals">
             <h2>Deine Wochenziele 📈</h2>
-            <p><strong>Trainingsziel:</strong> 3 Workouts</p>
-            <p><strong>Distanzziel:</strong> 20 km</p>
+          
+            <p id ="distanzzielLaufen"><strong>Distanzziel Laufen:</strong></p>
+             <div class="progress-bar">
+                <div id="barLaufen" class="progress" style="width: 50%;"></div>
+            </div>
+            <p id ="distanzzielRadfahren"><strong>Distanzziel Radfrahren:</strong></p>
+             <div class="progress-bar">
+                <div id="barRadfahren" class="progress" style="width: 50%;"></div>
+            </div>
+            <p id ="distanzzielSchwimmen"><strong>Distanzziel Schwimmen:</strong></p>
             <div class="progress-bar">
-                <div class="progress" style="width: 50%;"></div>
+                <div id="barSchwimmen" class="progress" style="width: 50%;"></div>
             </div>
             <p>Du hast 10 km geschafft — weiter so! 🚀</p>
         </section>
@@ -136,9 +144,9 @@ function showPage(page, button) {
         <section class="card best-times">
             <h2>Deine Bestzeiten 🏆</h2>
             <ul>
-                <li><strong>5 km Lauf:</strong> 23:45 Min.</li>
-                <li><strong>10 km Lauf:</strong> 50:10 Min.</li>
-                <li><strong>Halbmarathon:</strong> 1:45:00 Std.</li>
+                <li id="5k"></li>
+                <li id="10k"></li>
+                <li id="21k"></li>
             </ul>
         </section>
 
@@ -279,10 +287,47 @@ function showPage(page, button) {
             </ul>
         </section>
     </main>
+             <h2>🏃‍♂️ Deine wöchentlichen Trainingsziele</h2>
 
+  
+        <label for="goal-km">📏 Gesamtkilometer pro Woche:</label>
+        <input type="number" id="goal-km" placeholder="z.B. 40" min="0"> km
+        <label>in der Sportart</label>
+        <select name="activity_type" id="activity">
+                        <option value="Laufen">Laufen</option>
+                        <option value="Radfahren">Radfahren</option>
+                        <option value="Schwimmen">Schwimmen</option>
+                    </select>
+<br><br>
+        <label for="goal-time">⏱ Gesamtzeit pro Woche:</label>
+        <input type="text" id="goal-time" placeholder="z.B. 05:30:00 (hh:mm:ss)"><br><br>
+
+        <button onclick="zielErstellen()" >Ziele speichern</button>
+  
     <footer>
         <p>&copy; 2025 Trainingsplaner. Bleib stark und bleib dran! 💪</p>
     </footer>`
+
+            let distances = [5, 10, 21];
+            getRecords().then(records => {
+
+                for (let j = 0; j < distances.length; j++) {
+                    if (records[j] == null) { continue }
+                    let li = document.createElement("li")
+                    if (distances[j] == 21) {
+                        document.getElementById(`best-time-half-marathon`).value = records[j]
+                        li.innerHTML = "<strong>Halbmarathon: </strong>" + records[j]
+                        document.getElementById("saved-best-times").appendChild(li)
+                        continue
+                    }
+                    document.getElementById(`best-time-${distances[j]}k`).value = records[j]
+                    li.innerHTML = "<strong>" + distances[j] + " km Lauf: </strong>" + records[j]
+                    document.getElementById("saved-best-times").appendChild(li)
+                }
+            })
+            ziele().then(ziele => {
+                console.log(ziele)
+            })
             break;
         default:
             content.innerHTML = `
@@ -797,7 +842,7 @@ function loadTraining(day, month, year) {
         .catch(error => console.error('Error:', error));
 }
 
-function startseite() {
+async function startseite() {
     const formData = new FormData();
 
     fetch('startseite.php', {
@@ -811,25 +856,25 @@ function startseite() {
 
             for (let i = 0; i < data.past.length; i++) {
                 if (data.past[i].tage_seit == 0) {
-                    document.getElementById(`vergangen${i + 1}`).textContent = "Heute: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Heute:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
                 }
                 else if (data.past[i].tage_seit == 1) {
-                    document.getElementById(`vergangen${i + 1}`).textContent = "Gestern: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Gestern:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
                 } else if (data.past[i].tage_seit == 2) {
-                    document.getElementById(`vergangen${i + 1}`).textContent = "Vorgestern: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Vorgestern:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
                 } else {
-                    document.getElementById(`vergangen${i + 1}`).textContent = "Vor " + data.past[i].tage_seit + " Tagen: " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Vor " + data.past[i].tage_seit + " Tagen:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
                 }
             }
             for (let i = 0; i < data.future.length; i++) {
                 if (data.future[i].tage_seit == 0) {
-                    document.getElementById(`zukunft${i + 1}`).textContent = "Morgen: " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                    document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>Morgen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
                 }
                 else if (data.future[i].tage_seit == 1) {
-                    document.getElementById(`zukunft${i + 1}`).textContent = "Übermorgen: " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                    document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>Übermorgen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
                 }
                 else {
-                    document.getElementById(`zukunft${i + 1}`).textContent = "In " + (data.future[i].tage_seit - 1) + " Tagen: " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                    document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>In " + (data.future[i].tage_seit - 1) + " Tagen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
                 }
             }
         })
@@ -855,10 +900,28 @@ function startseite() {
             }
         })
         .catch(error => console.error('Error:', error));
-    getRecords()
+    let records = await getRecords(); // Warte, bis das Promise aufgelöst wird
+    let distances = [5, 10, 21];
+    for (let j = 0; j < distances.length; j++) {
+        if (distances[j] == 21) {
+            document.getElementById(`${distances[j]}k`).innerHTML = "<strong>Halbmarathon: </strong>" + records[j]
+            continue
+        }
+        document.getElementById(`${distances[j]}k`).innerHTML = "<strong>" + distances[j] + " km Lauf: </strong>" + records[j]
+    }
+    ziele().then(ziele => {
+        console.log(ziele)
+        let activities = ["Schwimmen", "Radfahren", "Laufen"];
+        for (let k = 0; k < activities.length; k++) {
+            document.getElementById(`distanzziel${activities[k]}`).innerHTML += " " + ziele[k].goal + " km"
+            document.getElementById(`bar${activities[k]}`).style.width = `${ziele[k].progress}%`
+        }
+    })
+
 }
 
 async function getRecords() {
+    let array = []
     let records = [5, 10, 21];
 
     for (let distance of records) {
@@ -884,10 +947,13 @@ async function getRecords() {
             const data = JSON.parse(responseText);
 
             console.log(`Rekord für ${distance} km:`, data);
+            array.push(data.best_time)
         } catch (error) {
             console.error('Fehler:', error);
         }
     }
+    console.log(array)
+    return array
 }
 
 
@@ -900,6 +966,7 @@ async function bestzeiten() {
         formData.append('distance', records[0][i]);
 
         try {
+            console.log("dddd")
             const response = await fetch('records.php', {
                 method: 'POST',
                 body: formData
@@ -908,9 +975,59 @@ async function bestzeiten() {
             if (!response.ok) {
                 throw new Error('Server error: ' + response.status);
             }
+            console.log(response)
 
         } catch (error) {
             console.error('Fehler:', error);
         }
     }
+}
+
+async function zielErstellen() {
+    console.log(document.getElementById("activity").value, document.getElementById("goal-km").value)
+    const formData = new FormData();
+    formData.append('activity_type', document.getElementById("activity").value);
+    formData.append("wochen_km", document.getElementById("goal-km").value)
+    fetch('zielerstellen.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.text()) // Erst als Text ausgeben!
+        .then(text => {
+            console.log(text)
+        })
+}
+
+async function ziele() {
+    let array = [];
+    let activities = ["Schwimmen", "Radfahren", "Laufen"];
+
+    for (let i = 0; i < activities.length; i++) {
+        const formData = new FormData();
+        formData.append('activity_type', activities[i]);
+
+        try {
+            console.log("Anfrage gesendet für:", activities[i]);
+
+            const response = await fetch('ziele.php', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Server error: ' + response.status);
+            }
+
+            // Wandle die Antwort in JSON um
+            const data = await response.json();
+            console.log("Antwort für", activities[i], ":", data);
+
+            // Füge das JSON zur Liste hinzu
+            array.push(data);
+        } catch (error) {
+            console.error('Fehler bei', activities[i], ":", error);
+        }
+    }
+
+    return array;
 }

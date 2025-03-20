@@ -29,7 +29,7 @@ if ($conn->connect_error) {
 }
 
 // Formulardaten empfangen
-$user_id = intval($_POST['user_id']); // Stelle sicher, dass es eine Zahl ist!
+$user_id = intval($_SESSION['user_id']);
 $activity_type = $conn->real_escape_string($_POST['activity_type']);
 $duration = intval($_POST['duration_minutes']);
 $date = $_POST['date'] ?? null;

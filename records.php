@@ -37,11 +37,6 @@ $user_id = intval($_SESSION['user_id']);
 $time = $_POST['time'] ?? null;
 $distance = intval($_POST['distance']);
 
-if ($time !== null) {
-    $time = $conn->real_escape_string($time);
-} else {
-    $time = "00:00:00"; // Fallback-Wert
-}
 
 // Check: Existiert der User?
 $user_check = $conn->query("SELECT id FROM users WHERE id = $user_id");
@@ -56,7 +51,7 @@ if (!$stmt->execute()) {
     die(json_encode(['error' => "Fehler: " . $stmt->error]));
 }
 
-
+echo json_encode(['success' => 'Bestzeit erfolgreich gespeichert!']);
 $stmt->close();
 $conn->close();
 
