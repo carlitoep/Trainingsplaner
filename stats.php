@@ -27,9 +27,7 @@ if ($conn->connect_error) {
 }
 
 // user_id aus POST lesen
-if (!isset($_POST['user_id']) || !isset($_POST['activity_type'])) {
-    die('Fehlende POST-Daten');
-}
+
 $user_id = intval($_SESSION['user_id']);
 $activity_type = $conn->real_escape_string($_POST['activity_type']);
 

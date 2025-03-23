@@ -37,7 +37,6 @@ $user_id = intval($_SESSION['user_id']);
 $time = $_POST['time'] ?? null;
 $distance = intval($_POST['distance']);
 
-
 // Check: Existiert der User?
 $user_check = $conn->query("SELECT id FROM users WHERE id = $user_id");
 if ($user_check->num_rows === 0) {

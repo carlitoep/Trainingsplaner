@@ -11,7 +11,11 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = intval($_SESSION['user_id']); // Benutzer-ID aus der Session
 $activity_type = $conn->real_escape_string($_POST['activity_type']);
-$wochen_km =  intval($_POST['wochen_km']);
+$wochen_km = $_POST['wochen_km'] ?? null;
+if (!is_numeric($wochen_km) || intval($wochen_km) <= 0) {
+    exit();
+}
+$wochen_km = intval($wochen_km); // Jetzt sicher und positiv
 
 $stmt = $conn->prepare("DELETE FROM kmziele WHERE user_id = ? AND activity_type = ? ");
 $stmt->bind_param("is", $user_id, $activity_type);

@@ -119,6 +119,15 @@ function showPage(page, button) {
             </div>
             <p>Du hast 10 km geschafft — weiter so! 🚀</p>
         </section>
+         <section class="card goals">
+            <h2>Deine Wochenziele 📈</h2>
+          
+            <p id ="stundenZiel"><strong>Trainingsziel:</strong></p>
+             <div class="progress-bar">
+                <div id="barStunden" class="progress" style="width: 50%;"></div>
+            </div>
+            <p id="motivation"></p>
+        </section>
 
         <!-- Letzte Aktivitäten -->
         <section class="card recent-activities">
@@ -150,12 +159,6 @@ function showPage(page, button) {
             </ul>
         </section>
 
-        <!-- Schnelle Links -->
-        <section class="quick-links">
-            <a id="TrainingHinzufügen" class="btn">Neues Training hinzufügen</a>
-            <a id="StatsAnzeigen" class="btn">Statistiken ansehen</a>
-            <a  id="Bestzeiten" class="btn">Bestzeiten und Vorhersagen</a>
-        </section>
     </main>
 
     <footer>
@@ -164,15 +167,6 @@ function showPage(page, button) {
             `;
             document.getElementById('kalenderbtn').addEventListener('click', function () {
                 showPage('page2', btn2);
-            });
-            document.getElementById('TrainingHinzufügen').addEventListener('click', function () {
-                showPage('page2', btn2);
-            });
-            document.getElementById('StatsAnzeigen').addEventListener('click', function () {
-                showPage('page3', btn3);
-            });
-            document.getElementById('Bestzeiten').addEventListener('click', function () {
-                showPage('page4', btn4);
             });
             startseite()
             break;
@@ -223,25 +217,20 @@ function showPage(page, button) {
     </header>
     <main class="stats-container">
         <section class="card">
-            <label for="timeRange">Zeitraum auswählen:</label>
-            <select id="timeRange" onchange="getStats()">
-                <option value="7">Woche</option>
-                <option value="30">Monat</option>
-                <option value="365">Jahr</option>
+            <label for="activity">Aktivität auswählen:</label>
+            <select id="activity" onchange="getStats()">
+                <option value="Schwimmen">Schwimmen</option>
+                <option value="radfahren">Radfahren</option>
+                <option value="Laufen">Laufen</option>
             </select>
         </section>
 
         <section class="card">
             <h2>Trainingsdauer: <span id="selected-range">Woche</span></h2>
             <div class="chart-container">
-                <canvas id="runningChart"></canvas>
+                <canvas id="Chart"></canvas>
             </div>
-            <div class="chart-container">
-                <canvas id="cyclingChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <canvas id="swimmingChart"></canvas>
-            </div>
+           
         </section>
     </main>
     <footer>
@@ -256,57 +245,60 @@ function showPage(page, button) {
             break;
         case 'page4':
             content.innerHTML = `
-                <!-- Seite für Bestzeiten -->
-<div id="page-best-times" class="page-content">
+               <div id="page-best-times" class="page-content">
     <header class="header">
-        <h1>Gib deine Bestzeiten ein 🏆</h1>
-        <p>Trage deine Bestzeiten für verschiedene Distanzen ein und speichere sie!</p>
+        <h1 id="h1">🏆 Bestzeiten & Trainingsziele</h1>
+        <p id="p1"></p>
     </header>
 
-    <main class="best-times-form">
+    <main class="best-times-container">
         <section class="card">
-            <h2>Bestzeiten hinzufügen</h2>
+            <h2>🏁 Bestzeiten hinzufügen</h2>
             <form id="best-times-form">
                 <label for="best-time-5k">5 km Lauf:</label>
-                <input type="text" id="best-time-5k" placeholder="z.B. 00:23:45" >
+                <input type="text" id="best-time-5k" placeholder="00:23:45">
 
                 <label for="best-time-10k">10 km Lauf:</label>
-                <input type="text" id="best-time-10k" placeholder="z.B. 00:50:10" >
+                <input type="text" id="best-time-10k" placeholder="00:50:10">
 
                 <label for="best-time-half-marathon">Halbmarathon:</label>
-                <input type="text" id="best-time-half-marathon" placeholder="z.B. 01:45:00" >
+                <input type="text" id="best-time-half-marathon" placeholder="01:45:00">
 
-                <button type="button" onclick="bestzeiten()" class="btn">Bestzeiten speichern</button>
+                <button type="button" onclick="bestzeiten()" class="btn">Speichern</button>
             </form>
         </section>
 
         <section class="card">
-            <h2>Deine gespeicherten Bestzeiten 🏅</h2>
-            <ul id="saved-best-times">
-                <!-- Hier werden die gespeicherten Bestzeiten angezeigt -->
-            </ul>
+            <h2>📜 Gespeicherte Bestzeiten</h2>
+            <ul id="saved-best-times"></ul>
         </section>
     </main>
-             <h2>🏃‍♂️ Deine wöchentlichen Trainingsziele</h2>
 
-  
-        <label for="goal-km">📏 Gesamtkilometer pro Woche:</label>
-        <input type="number" id="goal-km" placeholder="z.B. 40" min="0"> km
-        <label>in der Sportart</label>
-        <select name="activity_type" id="activity">
-                        <option value="Laufen">Laufen</option>
-                        <option value="Radfahren">Radfahren</option>
-                        <option value="Schwimmen">Schwimmen</option>
-                    </select>
-<br><br>
-        <label for="goal-time">⏱ Gesamtzeit pro Woche:</label>
-        <input type="text" id="goal-time" placeholder="z.B. 05:30:00 (hh:mm:ss)"><br><br>
+    <section class="card">
+        <h2>📅 Wöchentliche Trainingsziele</h2>
+        <form id="weekly-goals-form">
+            <label for="goal-km">📏 Gesamtkilometer pro Woche:</label>
+            <input type="number" id="goal-km" placeholder="z.B. 40" min="0">
 
-        <button onclick="zielErstellen()" >Ziele speichern</button>
-  
+            <label for="activity">🏋️ Sportart wählen:</label>
+            <select id="activity">
+                <option value="Laufen">Laufen</option>
+                <option value="Radfahren">Radfahren</option>
+                <option value="Schwimmen">Schwimmen</option>
+            </select>
+
+            <label for="goal-time">⏱ Gesamtzeit pro Woche:</label>
+            <input type="text" id="goal-time" placeholder="05:30:00 (hh:mm:ss)">
+
+            <button type="button" onclick="zielErstellen()" class="btn">Ziele speichern</button>
+        </form>
+    </section>
+
     <footer>
         <p>&copy; 2025 Trainingsplaner. Bleib stark und bleib dran! 💪</p>
-    </footer>`
+    </footer>
+</div>
+`
 
             let distances = [5, 10, 21];
             getRecords().then(records => {
@@ -583,42 +575,41 @@ function closeModal() {
 
 
 async function getStats() {
-    let range = parseInt(document.getElementById('timeRange').value);
     let lastTenWeeks = [];
 
-    let array = ["running", "cycling", "swimming"];
-    for (let i = 0; i < array.length; i++) {
-        const formData = new FormData();
-        formData.append('user_id', 1); // Deine user_id einfügen
-        formData.append('activity_type', array[i]);
+    let activity = document.getElementById("activity").value
 
-        try {
-            const response = await fetch('stats.php', {
-                method: 'POST',
-                body: formData
-            });
+    const formData = new FormData();
+    formData.append('user_id', 1); // Deine user_id einfügen
+    formData.append('activity_type', activity);
 
-            if (!response.ok) {
-                throw new Error('Server error: ' + response.status);
-            }
+    try {
+        const response = await fetch('stats.php', {
+            method: 'POST',
+            body: formData
+        });
 
-            // Antworte als Text (nicht JSON)
-            const responseText = await response.json();
-            console.log(responseText);
-            lastTenWeeks.push(responseText)
-            // Wenn du JSON erwartest, aber Text erhältst, kannst du später entscheiden, wie du den Inhalt behandeln möchtest
-            /* try {
-                 const data = JSON.parse(responseText); // Versuchen, es als JSON zu parsen
-                 console.log('Trainingsdaten:', data);
-                 lastTenWeeks.push(data); // Speichert das Ergebnis in lastTenWeeks
-             } catch (jsonError) {
-                 console.error('Fehler beim Parsen der JSON-Antwort:', jsonError);
-             }
- */
-        } catch (error) {
-            console.error('Fehler:', error);
+        if (!response.ok) {
+            throw new Error('Server error: ' + response.status);
         }
+
+        // Antworte als Text (nicht JSON)
+        const responseText = await response.json();
+        console.log(responseText);
+        lastTenWeeks.push(responseText)
+        // Wenn du JSON erwartest, aber Text erhältst, kannst du später entscheiden, wie du den Inhalt behandeln möchtest
+        /* try {
+             const data = JSON.parse(responseText); // Versuchen, es als JSON zu parsen
+             console.log('Trainingsdaten:', data);
+             lastTenWeeks.push(data); // Speichert das Ergebnis in lastTenWeeks
+         } catch (jsonError) {
+             console.error('Fehler beim Parsen der JSON-Antwort:', jsonError);
+         }
+*/
+    } catch (error) {
+        console.error('Fehler:', error);
     }
+
 
 
 
@@ -634,25 +625,11 @@ async function getStats() {
     }
     console.log(lastTenWeeksArray)
     createChart(
-        "runningChart",
-        "Laufen (Minuten)",
+        `Chart`,
+        activity + " (Minuten)",
         lastTenWeeksArray[0].reverse(),
         "rgba(255, 99, 132, 0.7)",
         lastTenWeeksLabel[0].reverse()
-    );
-    createChart(
-        "cyclingChart",
-        "Radfahren (Minuten)",
-        lastTenWeeksArray[1].reverse(),
-        "rgba(54, 162, 235, 0.7)",
-        lastTenWeeksLabel[1].reverse()
-    );
-    createChart(
-        "swimmingChart",
-        "Schwimmen (Minuten)",
-        lastTenWeeksArray[2].reverse(),
-        "rgba(75, 192, 192, 0.7)",
-        lastTenWeeksLabel[2].reverse()
     );
 
 }
@@ -672,12 +649,25 @@ function recordsave() {
     localStorage.setItem("record10km", document.getElementById("10km").value)
 }
 
+let myChart = null; // Globale Variable für das Diagramm
+
 function createChart(canvasId, label, data, color, weeks) {
-    const ctx = document.getElementById(canvasId).getContext("2d");
-    //const weeks = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"]
+    console.log(canvasId);
+    const canvas = document.getElementById(canvasId);
 
+    if (!canvas) {
+        console.error("Canvas mit ID " + canvasId + " nicht gefunden!");
+        return;
+    }
 
-    new Chart(ctx, {
+    const ctx = canvas.getContext("2d");
+
+    // Falls schon ein Diagramm existiert, es zerstören
+    if (myChart) {
+        myChart.destroy();
+    }
+
+    myChart = new Chart(ctx, {
         type: "bar",
         data: {
             labels: weeks,
@@ -704,6 +694,7 @@ function createChart(canvasId, label, data, color, weeks) {
         },
     });
 }
+
 function addTraining(day, month, year, activityType, duration, date, text, distance, blocksToSave) {
     let blocks = JSON.stringify(blocksToSave)
     console.log(blocks)
@@ -918,6 +909,9 @@ async function startseite() {
         }
     })
 
+    let stundenZiel = await stundenZiele()
+    document.getElementById(`stundenZiel`).innerHTML += " " + Math.floor(stundenZiel.goal / 60) + ":" + String(stundenZiel.goal % 60).padStart(2, "0") + " Stunden"
+    document.getElementById(`barStunden`).style.width = `${stundenZiel.progress}%`
 }
 
 async function getRecords() {
@@ -996,6 +990,16 @@ async function zielErstellen() {
         .then(text => {
             console.log(text)
         })
+    const formData2 = new FormData();
+    formData2.append("wochen_dauer", document.getElementById("goal-time").value)
+    fetch('stundenzielerstellen.php', {
+        method: 'POST',
+        body: formData2
+    })
+        .then(response => response.text()) // Erst als Text ausgeben!
+        .then(text => {
+            console.log(text)
+        })
 }
 
 async function ziele() {
@@ -1030,4 +1034,25 @@ async function ziele() {
     }
 
     return array;
+}
+
+async function stundenZiele() {
+    const formData = new FormData();
+
+    try {
+        const response = await fetch('stundenziel.php', {
+            method: 'POST',
+            body: formData
+        });
+
+        const text = await response.text();
+        console.log("Server-Antwort als Text:", text);
+        const json = JSON.parse(text); // JSON manuell parsen
+        console.log(json);
+
+        return json; // ✅ Jetzt gibt die Funktion das richtige Ergebnis zurück!
+    } catch (error) {
+        console.error("Fehler:", error);
+        return null; // Falls ein Fehler passiert, null zurückgeben
+    }
 }
