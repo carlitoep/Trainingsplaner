@@ -24,47 +24,106 @@ const events = ["SP", "DU", "DI", "TA",]
 
 let currentDate = new Date();
 
-
-
-
+const sportIcons = {
+    "Laufen": "🏃‍♂️",
+    "Radfahren": "🚴‍♂️",
+    "Schwimmen": "🏊‍♂️"
+};
+/*let trainingsData = {
+    "2025-03-12": ["Laufen", "Radfahren"],
+    "2025-03-15": ["Schwimmen"],
+    "2025-03-20": ["Laufen", "Schwimmen", "Radfahren"]
+}; // Beispiel-Daten, später aus Backend laden*/
 
 //let blocks = []; // Array, um die Trainingsblöcke zu speichern
 let draggingBlock = null; // Der aktuell gezogene Block
 let offsetX, offsetY;
 
 function renderCalendar() {
-    const daysContainer = document.getElementById('days');
-    const monthYear = document.getElementById('monthYear');
+    const daysContainer = document.getElementById("days");
+    const monthYear = document.getElementById("monthYear");
 
-    // Set the current month and year
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     monthYear.textContent = `${monthNames[month]} ${year}`;
 
-    // Get the first day of the month and total days in the month
     const firstDay = new Date(year, month, 1).getDay();
     const lastDate = new Date(year, month + 1, 0).getDate();
-
-    // Adjust for Monday as the first day (JavaScript uses Sunday as 0)
     const adjustedFirstDay = (firstDay === 0 ? 7 : firstDay) - 1;
 
-    // Clear previous days
-    daysContainer.innerHTML = '';
+    daysContainer.innerHTML = "";
 
-    // Create the calendar grid
-    let html = '<tr>';
-    for (let i = 0; i < adjustedFirstDay; i++) {
-        html += '<td class="empty"></td>'; // Empty cells for days before the 1st
-    }
-    for (let day = 1; day <= lastDate; day++) {
-        if ((day + adjustedFirstDay - 1) % 7 === 0) {
-            html += '</tr><tr>'; // Start a new row every week
-        }
-        html += `<td onclick="selectDay(${day},'${monthNames[month]}',${year})">${day}</td>`; // Add the day
-    }
-    html += '</tr>';
-    daysContainer.innerHTML = html;
+    let trainingsData = {}; // WICHTIG: Initialisierung als leeres Objekt
+
+    // Daten vom Server abrufen
+    const formData = new FormData();
+    formData.append("month", month + 1);
+    formData.append("year", year);
+
+    fetch("calender.php", {
+        method: "POST",
+        body: formData,
+    })
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Fehler beim Abrufen der Einträge");
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log("Empfangene Daten:", data);
+
+            // Daten für jedes Datum speichern
+            data.forEach((entry) => {
+                let dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(entry.tag).padStart(2, "0")}`;
+                trainingsData[dateKey] = entry.aktivitäten.split(", ");
+            });
+
+            console.log("trainingsData nach Fetch:", trainingsData);
+
+            // Jetzt erst den Kalender updaten
+            updateCalendar(daysContainer, adjustedFirstDay, lastDate, year, month, trainingsData);
+        })
+        .catch((error) => console.error("Fehler beim Laden der Daten:", error));
 }
+
+function updateCalendar(daysContainer, adjustedFirstDay, lastDate, year, month, trainingsData) {
+    let row = document.createElement("tr");
+
+    for (let i = 0; i < adjustedFirstDay; i++) {
+        let emptyCell = document.createElement("td");
+        emptyCell.classList.add("empty");
+        row.appendChild(emptyCell);
+    }
+
+    for (let day = 1; day <= lastDate; day++) {
+        let dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        let cell = document.createElement("td");
+        cell.onclick = () => selectDay(day, monthNames[month], year);
+        cell.innerHTML = `<span>${day}</span>`;
+
+        // Sportarten-Icons einfügen
+        if (trainingsData[dateKey]) {
+            let iconsHTML = trainingsData[dateKey].map((sport) => sportIcons[sport] || "❓").join(" ");
+            let iconDiv = document.createElement("div");
+            iconDiv.innerHTML = iconsHTML;
+            iconDiv.style.fontSize = "14px"; // Icons kleiner machen
+            cell.appendChild(iconDiv);
+        }
+
+        row.appendChild(cell);
+
+        if ((day + adjustedFirstDay) % 7 === 0) {
+            daysContainer.appendChild(row);
+            row = document.createElement("tr");
+        }
+    }
+
+    if (row.children.length > 0) {
+        daysContainer.appendChild(row);
+    }
+}
+
 
 function changeMonth(direction) {
     currentDate.setMonth(currentDate.getMonth() + direction);
@@ -117,7 +176,7 @@ function showPage(page, button) {
             <div class="progress-bar">
                 <div id="barSchwimmen" class="progress" style="width: 50%;"></div>
             </div>
-            <p>Du hast 10 km geschafft — weiter so! 🚀</p>
+    
         </section>
          <section class="card goals">
             <h2>Deine Wochenziele 📈</h2>
@@ -370,7 +429,7 @@ function selectDay(day, month, year) {
                 <div id="blockContainer" style="display: flex; border: 1px solid #ccc; height: 50px; width: 100%; position: relative;">
                 </div>
 
-                <div id="blockModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border: 1px solid #ccc; padding: 20px;">
+                <div id="blockModal" style="   align-items: center;justify-content: center;display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border: 1px solid #ccc; padding: 20px;">
                     <label for="blockDuration">Blockdauer (Minuten):</label>
                     <input type="number" id="blockDuration" placeholder="15">
                     <label id="blockIntensityLabel" for="blockIntensity"></label>
@@ -380,7 +439,9 @@ function selectDay(day, month, year) {
                 </div>
 
                 <button onclick="addBlock(${day}, '${month}', ${year})">Block hinzufügen</button>
-                <button type="submit" onclick="save(${day}, '${month}', ${year})" id="button">Save</button>
+                <button type="submit" onclick="save(${day}, '${month}', ${year})" id="button">Speichern</button>
+                 <button type="submit" onclick="deleteTraining(${day}, '${month}', ${year})" id="button">Löschen</button>
+
             </div>
         </div>
     `;
@@ -433,6 +494,7 @@ function save(day, month, year) {
     //saveBlocksToLocalStorage(day, month, year);
 
     alert('Notiz gespeichert!');
+    trainingsIDElement = ""
     showPage('page2', true)
 
 }
@@ -504,6 +566,15 @@ function setBlockDuration(day, month, year) {
     block.element.style.height = "100%";
     block.element.style.backgroundColor = getColorByPercentage(percentage);
     block.element.textContent = `${blockDuration} Min ${blockIntensity}/km`;
+
+    let intensity = parseFloat(blockIntensity);
+    if (intensity <= 1.5) {
+        block.classList.add("intensity-low");
+    } else if (intensity > 1.5 && intensity <= 2.5) {
+        block.classList.add("intensity-medium");
+    } else {
+        block.classList.add("intensity-high");
+    }
 
     closeModal();
 }
@@ -580,7 +651,6 @@ async function getStats() {
     let activity = document.getElementById("activity").value
 
     const formData = new FormData();
-    formData.append('user_id', 1); // Deine user_id einfügen
     formData.append('activity_type', activity);
 
     try {
@@ -593,19 +663,9 @@ async function getStats() {
             throw new Error('Server error: ' + response.status);
         }
 
-        // Antworte als Text (nicht JSON)
         const responseText = await response.json();
         console.log(responseText);
         lastTenWeeks.push(responseText)
-        // Wenn du JSON erwartest, aber Text erhältst, kannst du später entscheiden, wie du den Inhalt behandeln möchtest
-        /* try {
-             const data = JSON.parse(responseText); // Versuchen, es als JSON zu parsen
-             console.log('Trainingsdaten:', data);
-             lastTenWeeks.push(data); // Speichert das Ergebnis in lastTenWeeks
-         } catch (jsonError) {
-             console.error('Fehler beim Parsen der JSON-Antwort:', jsonError);
-         }
-*/
     } catch (error) {
         console.error('Fehler:', error);
     }
@@ -833,6 +893,33 @@ function loadTraining(day, month, year) {
         .catch(error => console.error('Error:', error));
 }
 
+function deleteTraining(day, month, year) {
+    console.log(trainingsIDElement)
+    let date = `${year}-${(monthNames.indexOf(month) + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`
+    console.log(date)
+    let training_id
+    if (trainingsIDElement == "") training_id = date + `${1}`
+    else training_id = trainingsIDElement
+    const formData = new FormData();
+    formData.append('training_id', training_id);
+    fetch('delete_training.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            if (data.löschen === "erfolgreich") {
+                alert("Training erfolgreich gelöscht!");
+                showPage('page2', true)
+                trainingsIDElement = ""
+            } else {
+                alert("Fehler beim Löschen des Trainings.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
 async function startseite() {
     const formData = new FormData();
 
@@ -912,6 +999,12 @@ async function startseite() {
     let stundenZiel = await stundenZiele()
     document.getElementById(`stundenZiel`).innerHTML += " " + Math.floor(stundenZiel.goal / 60) + ":" + String(stundenZiel.goal % 60).padStart(2, "0") + " Stunden"
     document.getElementById(`barStunden`).style.width = `${stundenZiel.progress}%`
+    if (Math.floor(stundenZiel.done / 60) == 1) {
+        document.getElementById("motivation").innerHTML = `Du hast schon über ${Math.floor(stundenZiel.done / 60)} Stunde geschafft — weiter so! 🚀`
+    } else if (Math.floor(stundenZiel.done / 60) > 1) {
+        document.getElementById("motivation").innerHTML = `Du hast schon über ${Math.floor(stundenZiel.done / 60)} Stunden geschafft — weiter so! 🚀`
+    }
+
 }
 
 async function getRecords() {

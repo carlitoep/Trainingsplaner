@@ -44,11 +44,7 @@ $text = $conn->real_escape_string($_POST['text']);
 $training_id = $conn->real_escape_string($_POST['training_id']);
 $blocks = $conn->real_escape_string($_POST['blocks']);
 
-// Check: Existiert der User?
-$user_check = $conn->query("SELECT id FROM users WHERE id = $user_id");
-if ($user_check->num_rows === 0) {
-    die('Fehler: Der angegebene Benutzer existiert nicht.');
-}
+
 
 // SQL vorbereiten INSERT INTO trainings (user_id, activity_type, duration_minutes, date, distance, text, training_id) VALUES (?, ?, ?, ?, ?, ?, ?)$user_id, $activity_type, $duration, $date, $distance, $text, $training_id
 

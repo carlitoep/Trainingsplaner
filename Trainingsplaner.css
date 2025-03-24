@@ -180,20 +180,51 @@ h1{
 #eventModal button:hover {
     background-color: #0056b3;
 }
-
 .block {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    border-right: 2px solid white;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    text-align: center;
+}
+
+.block:hover {
+    transform: scale(1.1);
+}
+.intensity-low { background-color: #4CAF50; } /* Grün für niedrige Intensität */
+.intensity-medium { background-color: #FFC107; } /* Gelb für mittlere Intensität */
+.intensity-high { background-color: #F44336; } /* Rot für hohe Intensität */
+#blockContainer {
+    display: flex;
+    border: 1px solid #ccc;
+    height: 50px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+#blockModal{
+    align-items: center;
+    justify-content: center;
+}
+/*.block {
     background-color: lightblue;
     height: 100%;
     text-align: center;
-    line-height: 50px; /* Anpassen an die Höhe des Containers */
+    line-height: 50px; 
     cursor: pointer;
     border: 1px solid #000;
     box-sizing: border-box;
-    display: flex; /* Flexbox für besseren Text-Style */
+    display: flex; 
     align-items: center;
     justify-content: center;
-    margin-right: 5px; /* Abstand zwischen Blöcken */
-}
+    margin-right: 5px; 
+}*/
 #eventModal #BL {
     display: flex;
     gap: 5px; /* Abstand zwischen den Blöcken */
@@ -212,7 +243,7 @@ h1{
     height: 100px; /* oder wie hoch dein Blockbereich sein soll */
     overflow: hidden; /* Verhindert, dass Blöcke umbrechen */
 }
-.block {
+/*.block {
     background-color: rgb(217, 181, 38);
     height: 100%;
     min-width: 50px;
@@ -220,7 +251,7 @@ h1{
     display: flex;
     justify-content: center;
     align-items: center;
-}
+}*/
 #BL {
     display: flex;
     align-items: center; /* Vertikal zentrieren */
