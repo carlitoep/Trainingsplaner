@@ -279,7 +279,7 @@ function showPage(page, button) {
             <label for="activity">Aktivität auswählen:</label>
             <select id="activity" onchange="getStats()">
                 <option value="Schwimmen">Schwimmen</option>
-                <option value="radfahren">Radfahren</option>
+                <option value="Radfahren">Radfahren</option>
                 <option value="Laufen">Laufen</option>
             </select>
         </section>
@@ -438,10 +438,11 @@ function selectDay(day, month, year) {
                     <button onclick="closeModal()">Abbrechen</button>
                 </div>
 
-                <button onclick="addBlock(${day}, '${month}', ${year})">Block hinzufügen</button>
-                <button type="submit" onclick="save(${day}, '${month}', ${year})" id="button">Speichern</button>
-                 <button type="submit" onclick="deleteTraining(${day}, '${month}', ${year})" id="button">Löschen</button>
-
+               <div class="button-container">
+            <button class="delete-btn" onclick="addBlock(${day}, '${month}', ${year})">Block hinzufügen</button>
+            <button class="delete-btn" onclick="save(${day}, '${month}', ${year})">Speichern</button>
+            <button onclick="deleteTraining(${day}, '${month}', ${year})" class="delete-btn">Löschen</button>
+        </div>
             </div>
         </div>
     `;
@@ -636,6 +637,8 @@ function openModal(block, blocks) {
             input.placeholder = "30"
         case "Laufen": label.textContent = "Geschwindigkeit(min/km)"
             input.placeholder = "4:30"
+        default: label.textContent = "Geschwindigkeit(min/km)"
+            input.placeholder = "4:30"
     }
 }
 
@@ -652,6 +655,7 @@ async function getStats() {
 
     const formData = new FormData();
     formData.append('activity_type', activity);
+    console.log(activity)
 
     try {
         const response = await fetch('stats.php', {
@@ -714,6 +718,7 @@ let myChart = null; // Globale Variable für das Diagramm
 function createChart(canvasId, label, data, color, weeks) {
     console.log(canvasId);
     const canvas = document.getElementById(canvasId);
+    console.log(label);
 
     if (!canvas) {
         console.error("Canvas mit ID " + canvasId + " nicht gefunden!");
@@ -854,40 +859,42 @@ function loadTraining(day, month, year) {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            console.log(data[0].duration_minutes)
-            console.log(document.getElementById("duration").value)
-            document.getElementById("activity_type").value = data[0].activity_type
-            document.getElementById("duration").value = parseFloat(data[0].duration_minutes)
-            document.getElementById("text").value = data[0].text
-            document.getElementById("distance").value = parseFloat(data[0].distance)
-            trainingsIDElement = data[0].training_id
-            loadBlocks(data[0].date, data[0].blocks)
-            for (let i = 0; i < data.length + 1; i++) {
-                console.log(i)
-                if (i == data.length && i > 0) {
+            if (data.length > 0) {
+                console.log(data[0].duration_minutes)
+                console.log(document.getElementById("duration").value)
+                document.getElementById("activity_type").value = data[0].activity_type
+                document.getElementById("duration").value = parseFloat(data[0].duration_minutes)
+                document.getElementById("text").value = data[0].text
+                document.getElementById("distance").value = parseFloat(data[0].distance)
+                trainingsIDElement = data[0].training_id
+                loadBlocks(data[0].date, data[0].blocks)
+                for (let i = 0; i < data.length + 1; i++) {
+                    console.log(i)
+                    if (i == data.length && i > 0) {
+                        let button = document.createElement("button")
+                        button.textContent = "+"
+                        document.getElementById("trainings").appendChild(button)
+                        button.addEventListener("click", function () {
+                            document.getElementById("activity_type").value = "Laufen"
+                            document.getElementById("duration").value = null
+                            document.getElementById("text").value = ""
+                            document.getElementById("distance").value = null
+                            trainingsIDElement = ""
+                        })
+                        break
+                    }
                     let button = document.createElement("button")
-                    button.textContent = "+"
+                    button.textContent = data[i].activity_type
                     document.getElementById("trainings").appendChild(button)
                     button.addEventListener("click", function () {
-                        document.getElementById("activity_type").value = "Laufen"
-                        document.getElementById("duration").value = null
-                        document.getElementById("text").value = ""
-                        document.getElementById("distance").value = null
-                        trainingsIDElement = ""
+                        document.getElementById("activity_type").value = data[i].activity_type
+                        document.getElementById("duration").value = parseFloat(data[i].duration_minutes)
+                        document.getElementById("text").value = data[i].text
+                        document.getElementById("distance").value = parseFloat(data[i].distance)
+                        trainingsIDElement = data[i].training_id
+                        loadBlocks(data[i].date, data[i].blocks)
                     })
-                    break
                 }
-                let button = document.createElement("button")
-                button.textContent = data[i].activity_type
-                document.getElementById("trainings").appendChild(button)
-                button.addEventListener("click", function () {
-                    document.getElementById("activity_type").value = data[i].activity_type
-                    document.getElementById("duration").value = parseFloat(data[i].duration_minutes)
-                    document.getElementById("text").value = data[i].text
-                    document.getElementById("distance").value = parseFloat(data[i].distance)
-                    trainingsIDElement = data[i].training_id
-                    loadBlocks(data[i].date, data[i].blocks)
-                })
             }
         })
         .catch(error => console.error('Error:', error));

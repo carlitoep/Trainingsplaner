@@ -11,7 +11,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($username) || empty($password)) {
         $errors[] = "Bitte fülle beide Felder aus.";
     } else {
-        // Benutzer aus der DB holen
         $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -19,7 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user = $result->fetch_assoc();
 
         if ($user && password_verify($password, $user['password'])) {
-            // Session setzen und weiterleiten
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             header("Location: Trainingsplaner.html");
@@ -27,9 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $errors[] = "Falscher Benutzername oder Passwort.";
         }
-        
         $stmt->close();
-    
     }
 }
 ?>
@@ -38,31 +34,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Registrierung</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h2>Login</h2>
 
-    <?php
-    if (!empty($errors)) {
-        echo '<ul>';
-        foreach ($errors as $error) {
-            echo "<li style='color: red;'>$error</li>";
-        }
-        echo '</ul>';
-    }
-    ?>
+    <div class="container">
+        <div class="form-box" id="loginBox">
+            <h2>Login</h2>
+            <form method="POST" id="loginForm">
+                <input name="username" type="text" placeholder="Benutzername" required>
+                <input name="password" type="password" placeholder="Passwort" required>
+                <button type="submit" class="btn">Login</button>
+            </form>
+            <p>Noch kein Konto? <a href="register.php">Registrieren</a></p>
+        </div>
 
-    <form method="POST">
-        <label>Benutzername:</label><br>
-        <input type="text" name="username" required><br><br>
+        
+    </div>
+</body>
+</html>
 
-        <label>Passwort:</label><br>
-        <input type="password" name="password" required><br><br>
-
-        <button type="submit">Einloggen</button>
-    </form>
-
-    <p>Noch keinen Account? <a href="register.php">Registrieren</a></p>
 </body>
 </html>

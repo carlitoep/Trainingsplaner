@@ -76,96 +76,43 @@ h1{
     cursor: default;
 }
 #eventModal {
-    
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Vertikale Zentrierung */
-    align-items: center; /* Horizontale Zentrierung */
+    align-items: center;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     background: white;
-    padding: 20px;
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 10;
-    width: 300px; /* Optional, gibt eine feste Breite an */
-}
-#eventModal textarea {
-    width: 100%;
-    height: 100px;
-    margin-top: 10px;
-    padding: 10px; /* Hinzugefügtes Padding für besseres Aussehen */
-    border: 1px solid #ccc; /* Sanfter, grauer Rand */
-    border-radius: 8px; /* Abgerundete Ecken */
-    font-size: 14px; /* Angepasste Schriftgröße */
-    font-family: Arial, sans-serif; /* Einheitliche Schriftart */
-    resize: none; /* Verhindert, dass der Benutzer die Größe ändern kann */
-    box-sizing: border-box; /* Bezieht Padding und Border in die Gesamtgröße ein */
-}
-
-#eventModal textarea:focus {
-    border-color: #007bff; /* Blaue Randfarbe beim Fokussieren */
-    outline: none; /* Entfernt den Standard-Fokusrahmen */
-}
-#eventModal label {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 5px;
-    display: block; /* Label über dem Input anzeigen */
-}
-
-/* Inputs und Textareas */
-#eventModal input,
-#eventModal textarea,
-#eventModal select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
-    box-sizing: border-box; /* Padding und Border einbeziehen */
-}
-
-/* Textarea: Verhindere Größenänderung */
-
-#eventModal {
-    margin-bottom: 15px; /* Abstand zwischen den Gruppen */
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    width: 350px;
+    max-width: 90%;
 }
 
 #eventModal label {
-    display: flex; /* Label über dem Input/Select anzeigen */
     font-size: 14px;
     font-weight: bold;
-    margin-bottom: 5px; /* Abstand zwischen Label und Input */
     color: #555;
+    margin-bottom: 5px;
 }
 
-/*#eventModal input,
-#eventModal textarea,
-#eventModal select {
-    width: 100%; 
-    padding: 10px; 
-    font-size: 14px;
+#eventModal input,
+#eventModal select,
+#eventModal textarea {
+    width: 100%;
+    padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 5px; /* Abgerundete Kanten 
-    box-sizing: border-box; /* Padding wird in die Breite einbezogen 
-}*/
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
 
 #eventModal textarea {
-    resize: none; /* Deaktiviert Größenänderung */
-    height: 80px; /* Standardhöhe */
+    height: 80px;
+    resize: none;
 }
-
-#eventModal select {
-    appearance: none; /* Standard-Browser-Stile entfernen */
-    background-color: white;
-    cursor: pointer;
-}
-
 
 #eventModal button {
     background-color: #007bff;
@@ -173,13 +120,18 @@ h1{
     border: none;
     padding: 10px;
     cursor: pointer;
-    margin-top: 10px;
-    width: 100px; /* Feste Breite für den Button */
-    border-radius: 5px
+    border-radius: 5px;
+    width: 100px;
+    transition: background 0.3s;
 }
+
 #eventModal button:hover {
     background-color: #0056b3;
 }
+
+/* Button-Container für bessere Anordnung */
+
+
 .block {
     height: 100%;
     display: flex;
@@ -575,4 +527,19 @@ input:focus, select:focus {
     padding: 10px;
     margin-bottom: 5px;
     border-radius: 5px;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    font-size: 90%;
+}
+
+.delete-btn:hover {
+    background-color: #a71d2a;
 }
