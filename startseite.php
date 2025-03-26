@@ -1,17 +1,7 @@
 <?php
 session_start();
 
-// Datenbankverbindung
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "trainingsplaner";
-
-$conn = new mysqli($servername, $username, $password, $database);
-if ($conn->connect_error) {
-    die(json_encode(['error' => 'Verbindung fehlgeschlagen: ' . $conn->connect_error]));
-}
-
+include 'config.php';
 // Überprüfen, ob der User eingeloggt ist
 if (!isset($_SESSION['user_id'])) {
     die(json_encode(['error' => 'Nicht eingeloggt']));

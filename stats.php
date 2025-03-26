@@ -15,17 +15,7 @@ if (!isset($_SESSION['user_id'])) {
     die(json_encode(['error' => 'Bitte melde dich an.']));
 }
 
-// Datenbankverbindung
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "Trainingsplaner";
-
-$conn = new mysqli($servername, $username, $password, $database);
-if ($conn->connect_error) {
-    die(json_encode(['error' => 'Verbindung fehlgeschlagen: ' . $conn->connect_error]));
-}
-
+include 'config.php';
 // user_id aus POST lesen
 
 $user_id = intval($_SESSION['user_id']);

@@ -21,17 +21,7 @@ if (!isset($_SESSION['user_id'])) {
     echo json_encode(['error' => 'Nicht angemeldet']);
     exit();
 }
-
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "Trainingsplaner";
-
-$conn = new mysqli($servername, $username, $password, $database);
-if ($conn->connect_error) {
-    echo json_encode(['error' => 'Verbindung fehlgeschlagen: ' . $conn->connect_error]);
-    exit();
-}
+include 'config.php';
 
 // Eingaben validieren
 $user_id = $_SESSION['user_id'];

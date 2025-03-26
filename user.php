@@ -21,17 +21,7 @@ function jsonError($message) {
 if (!isset($_SESSION['user_id'])) {
     jsonError("Bitte melde dich an.");
 }
-
-// Datenbankverbindung
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "Trainingsplaner";
-
-$conn = new mysqli($servername, $username, $password, $database);
-if ($conn->connect_error) {
-    jsonError("Verbindung fehlgeschlagen: " . $conn->connect_error);
-}
+include 'config.php';
 
 // user_id aus der Session
 $user_id = intval($_SESSION['user_id']);
