@@ -797,7 +797,7 @@ function addTraining(day, month, year, activityType, duration, date, text, dista
                 formData.append('training_id', training_id);
                 formData.append('blocks', blocks);
 
-                fetch('http://localhost/trainingsplaner/add_training.php', {
+                fetch('add_training.php', {
                     method: 'POST',
                     body: formData
                 })
@@ -938,31 +938,35 @@ async function startseite() {
         .then(data => {
             console.log('Vergangene Trainings:', data.past);
             console.log('Zukünftige Trainings:', data.future);
-
-            for (let i = 0; i < data.past.length; i++) {
-                if (data.past[i].tage_seit == 0) {
-                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Heute:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
-                }
-                else if (data.past[i].tage_seit == 1) {
-                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Gestern:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
-                } else if (data.past[i].tage_seit == 2) {
-                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Vorgestern:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
-                } else {
-                    document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Vor " + data.past[i].tage_seit + " Tagen:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+            if (data.past != null) {
+                for (let i = 0; i < data.past.length; i++) {
+                    if (data.past[i].tage_seit == 0) {
+                        document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Heute:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    }
+                    else if (data.past[i].tage_seit == 1) {
+                        document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Gestern:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    } else if (data.past[i].tage_seit == 2) {
+                        document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Vorgestern:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    } else {
+                        document.getElementById(`vergangen${i + 1}`).innerHTML = "<strong>Vor " + data.past[i].tage_seit + " Tagen:</strong> " + data.past[i].activity_type + " | " + data.past[i].duration_minutes + " Minuten"
+                    }
                 }
             }
-            for (let i = 0; i < data.future.length; i++) {
-                if (data.future[i].tage_seit == 0) {
-                    document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>Morgen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
-                }
-                else if (data.future[i].tage_seit == 1) {
-                    document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>Übermorgen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
-                }
-                else {
-                    document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>In " + (data.future[i].tage_seit - 1) + " Tagen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+            if (data.future != null) {
+                for (let i = 0; i < data.future.length; i++) {
+                    if (data.future[i].tage_seit == 0) {
+                        document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>Morgen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                    }
+                    else if (data.future[i].tage_seit == 1) {
+                        document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>Übermorgen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                    }
+                    else {
+                        document.getElementById(`zukunft${i + 1}`).innerHTML = "<strong>In " + (data.future[i].tage_seit - 1) + " Tagen:</strong> " + data.future[i].activity_type + " | " + data.future[i].duration_minutes + " Minuten"
+                    }
                 }
             }
         })
+
         .catch(error => console.error('Error:', error));
 
     fetch('user.php', {
@@ -989,29 +993,37 @@ async function startseite() {
     let distances = [5, 10, 21];
     for (let j = 0; j < distances.length; j++) {
         if (distances[j] == 21) {
-            document.getElementById(`${distances[j]}k`).innerHTML = "<strong>Halbmarathon: </strong>" + records[j]
+            if (records[j] != null && records[j] != "00:00:00") {
+                document.getElementById(`${distances[j]}k`).innerHTML = "<strong>Halbmarathon: </strong>" + records[j]
+            }
             continue
         }
-        document.getElementById(`${distances[j]}k`).innerHTML = "<strong>" + distances[j] + " km Lauf: </strong>" + records[j]
+        if (records[j] != null && records[j] != "00:00:00") {
+            document.getElementById(`${distances[j]}k`).innerHTML = "<strong>" + distances[j] + " km Lauf: </strong>" + records[j]
+        }
     }
     ziele().then(ziele => {
         console.log(ziele)
+
         let activities = ["Schwimmen", "Radfahren", "Laufen"];
         for (let k = 0; k < activities.length; k++) {
-            document.getElementById(`distanzziel${activities[k]}`).innerHTML += " " + ziele[k].goal + " km"
-            document.getElementById(`bar${activities[k]}`).style.width = `${ziele[k].progress}%`
+            if (ziele[k].goal != null) {
+                document.getElementById(`distanzziel${activities[k]}`).innerHTML += " " + ziele[k].goal + " km"
+                document.getElementById(`bar${activities[k]}`).style.width = `${ziele[k].progress}%`
+            }
         }
     })
 
     let stundenZiel = await stundenZiele()
-    document.getElementById(`stundenZiel`).innerHTML += " " + Math.floor(stundenZiel.goal / 60) + ":" + String(stundenZiel.goal % 60).padStart(2, "0") + " Stunden"
-    document.getElementById(`barStunden`).style.width = `${stundenZiel.progress}%`
-    if (Math.floor(stundenZiel.done / 60) == 1) {
-        document.getElementById("motivation").innerHTML = `Du hast schon über ${Math.floor(stundenZiel.done / 60)} Stunde geschafft — weiter so! 🚀`
-    } else if (Math.floor(stundenZiel.done / 60) > 1) {
-        document.getElementById("motivation").innerHTML = `Du hast schon über ${Math.floor(stundenZiel.done / 60)} Stunden geschafft — weiter so! 🚀`
+    if (stundenZiel.goal != null) {
+        document.getElementById(`stundenZiel`).innerHTML += " " + Math.floor(stundenZiel.goal / 60) + ":" + String(stundenZiel.goal % 60).padStart(2, "0") + " Stunden"
+        document.getElementById(`barStunden`).style.width = `${stundenZiel.progress}%`
+        if (Math.floor(stundenZiel.done / 60) == 1) {
+            document.getElementById("motivation").innerHTML = `Du hast schon über ${Math.floor(stundenZiel.done / 60)} Stunde geschafft — weiter so! 🚀`
+        } else if (Math.floor(stundenZiel.done / 60) > 1) {
+            document.getElementById("motivation").innerHTML = `Du hast schon über ${Math.floor(stundenZiel.done / 60)} Stunden geschafft — weiter so! 🚀`
+        }
     }
-
 }
 
 async function getRecords() {

@@ -28,10 +28,13 @@ if ($user_id === 0) {
 
 // SQL-Abfrage
 $sql = "WITH week_range AS (
-    -- Erstellen einer Liste der Wochen im gewünschten Zeitraum (z. B. letzten 10 Wochen)
+    -- Erstellen einer Liste der letzten 10 Wochen, inkl. der aktuellen Woche
     SELECT DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL n WEEK), '%Y-%u') AS Jahr_Woche
-    FROM (SELECT @row := @row + 1 AS n FROM information_schema.columns, (SELECT @row := 0) r LIMIT 10) numbers
+    FROM (SELECT @row := @row + 1 AS n FROM 
+          (SELECT @row := -1) r, information_schema.columns 
+          LIMIT 10) numbers
 )
+
 
 SELECT 
     w.Jahr_Woche AS Woche,

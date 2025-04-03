@@ -1,8 +1,8 @@
 <?php
 $host = "localhost";
-$username = "152283m120060_1";
-$password = "Carlitoep133i";
-$dbname = "152283m120060_1";
+$username = "root";
+$password = "";
+$dbname = "trainingsplaner";
 
 // Verbindung mit MySQLi
 $conn = new mysqli($host, $username, $password, $dbname);
